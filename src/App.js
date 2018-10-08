@@ -251,18 +251,26 @@ function reducer(state, action) {
 
   } else if (action.type === 'ADD_PRODUCT_SELECTED'){
     
-    const newProductSelected = {
-      uuid: action.id,
-    };
+    const newProductSelected = action.id;
     
     return {
       productsSelected: action.listSelected.concat(newProductSelected),
+      activePage: state.activePage,
+      productsListSorted: state.productsListSorted,
+      productsByPage: state.productsByPage,
+      usersList: state.usersList,
+      conditionsList: state.conditionsList,
     }
 
   } else if (action.type === 'DELETE_PRODUCT_SELECTED'){
-    const newProductsSelected = action.listSelected.filter((item) => item.id !== action.id);
+    const newProductsSelected = action.listSelected.filter(item => item !== action.id);
     return {
       productsSelected: newProductsSelected,
+      activePage: state.activePage,
+      productsListSorted: state.productsListSorted,
+      productsByPage: state.productsByPage,
+      usersList: state.usersList,
+      conditionsList: state.conditionsList,
     }; 
   } else if (action.type === 'CHANGE_ACTIVE_PAGE') { 
     return {
@@ -271,8 +279,9 @@ function reducer(state, action) {
       productsByPage: state.productsByPage,
       usersList: state.usersList,
       conditionsList: state.conditionsList,
-    };
-  
+      productsSelected: [],  
+    };    
+
   } else {
     return state;
   }
@@ -294,13 +303,32 @@ const store = createStore(reducer, initialState);
 class Product extends Component {
   
   
-  
-  render() {
+  handleChecked = onClick => (e,data) => {
+
+    if (data.checked === true){
+      store.dispatch({
+        type: 'ADD_PRODUCT_SELECTED',
+        id: this.props.item.uuid,
+        listSelected: this.props.productsSelected,
+      })
+    } else {
+      store.dispatch({
+        type: 'DELETE_PRODUCT_SELECTED',
+        id: this.props.item.uuid,
+        listSelected: this.props.productsSelected,
+      })
+    }
     
+
+  }
+
+  render() {
     return (
       <Table.Row key={this.props.item.uuid}>
               <Table.Cell collapsing>
-                <Checkbox slider />
+                <Checkbox slider 
+                  checked={window.helpers.isProductChecked(this.props.productsSelected, this.props.item.uuid)}
+                  onClick={this.handleChecked()}> /></Checkbox>
               </Table.Cell>
               
               <Table.Cell>
@@ -495,7 +523,9 @@ class SelectableProduct extends Component {
         key = {this.props.item.uuid} 
         item = {this.props.item} 
         conditionsList = {this.props.conditionsList}
-        usersList = {this.props.usersList} 
+        usersList = {this.props.usersList}
+        //isChecked = {window.helpers.isProductChecked(this.props.productsSelected, this.props.item.uuid)}
+        productsSelected = {this.props.productsSelected} 
       />
     )
   }
@@ -518,7 +548,8 @@ class ProductsTableList extends Component {
       <SelectableProduct 
         key={item.uuid} item = {item} 
         conditionsList = {this.props.conditionsList}
-        usersList = {this.props.usersList} 
+        usersList = {this.props.usersList}
+        productsSelected = {this.props.productsSelected} 
       />  
     )
         

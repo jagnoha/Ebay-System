@@ -30,7 +30,11 @@ window.helpers = (function () {
         };
         return 'red';
     } 
-      
+
+    function isProductChecked(list, id){
+        return (list.filter(item => item === id).length > 0 ? true : false) 
+    }
+
     const priceWarning = (price) => {
         if (Number(price) <= 0){
           return <Icon color='blue' name='warning sign' />
@@ -49,6 +53,7 @@ window.helpers = (function () {
         getColorConnection,
         priceWarning,
         outOfStock,
+        isProductChecked,
     }
 
 }())
