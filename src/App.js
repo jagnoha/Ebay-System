@@ -3,8 +3,8 @@ import { createStore } from 'redux';
 import logo from './logo.svg';
 import './App.css';
 import './helpers.js';
-import { Label, Pagination, Container, Divider, Segment, Grid, Table, Modal, 
-  Dropdown, Image, Item, Checkbox, Button, Icon } from 'semantic-ui-react'
+import { Label, Form, Radio, Pagination, Container, Divider, Segment, Grid, Table, Modal, 
+  Dropdown, Image, Item, Checkbox, Button, Icon, Message } from 'semantic-ui-react'
 import _ from 'lodash'
 
 
@@ -21,7 +21,7 @@ import _ from 'lodash'
 let users = [
   {
     id: '1',
-    username: 'orr'
+    username: 'orr',
   },
   {
     id: '2',
@@ -227,13 +227,16 @@ let productsServer = [
 
 const initialState = {
   productsList: productsServer,
-  productsListSorted: productsServer,
-  //productsListGrouped: productsServer.chunk(3),
+  productsListSorted: productsServer,  
   productsByPage: 3,  
   activePage: 1,
   productsSelected: [],
   conditionsList: conditions,
   usersList: users,
+  usersFilterActive: 'ALL',
+  statusFilterActive: 'ALL',
+  conditionsFilterActive: 'ALL',        
+  checkAll: false,
 };
 
 function reducer(state, action) {
@@ -246,7 +249,10 @@ function reducer(state, action) {
       usersList: state.usersList,
       conditionsList: state.conditionsList,
       activePage: state.activePage,
-      
+      usersFilterActive: state.usersFilterActive,
+      statusFilterActive: state.statusFilterActive,
+      conditionsFilterActive: state.conditionsFilterActive,        
+      checkAll: false,
     };
 
   } else if (action.type === 'ADD_PRODUCT_SELECTED'){
@@ -260,6 +266,10 @@ function reducer(state, action) {
       productsByPage: state.productsByPage,
       usersList: state.usersList,
       conditionsList: state.conditionsList,
+      usersFilterActive: state.usersFilterActive,
+      statusFilterActive: state.statusFilterActive,
+      conditionsFilterActive: state.conditionsFilterActive,        
+      checkAll: state.checkAll,
     }
 
   } else if (action.type === 'DELETE_PRODUCT_SELECTED'){
@@ -271,6 +281,10 @@ function reducer(state, action) {
       productsByPage: state.productsByPage,
       usersList: state.usersList,
       conditionsList: state.conditionsList,
+      usersFilterActive: state.usersFilterActive,
+      statusFilterActive: state.statusFilterActive,
+      conditionsFilterActive: state.conditionsFilterActive,        
+      checkAll: state.checkAll,
     }; 
   } else if (action.type === 'CHANGE_ACTIVE_PAGE') { 
     return {
@@ -279,13 +293,90 @@ function reducer(state, action) {
       productsByPage: state.productsByPage,
       usersList: state.usersList,
       conditionsList: state.conditionsList,
-      productsSelected: [],  
-    };    
+      productsSelected: [],
+      checkAll: false,
+      usersFilterActive: state.usersFilterActive,
+      statusFilterActive: state.statusFilterActive,
+      conditionsFilterActive: state.conditionsFilterActive,          
+    }; 
+    
+  } else if (action.type === 'CHANGE_USER_FILTER') {
+    return {
+        usersFilterActive: action.usersFilterActive,
+        activePage: 1,
+        productsListSorted: state.productsListSorted,
+        productsByPage: state.productsByPage,
+        usersList: state.usersList,
+        conditionsList: state.conditionsList,
+        productsSelected: [],
+        checkAll: false,
+        statusFilterActive: state.statusFilterActive,
+        conditionsFilterActive: state.conditionsFilterActive,
+    }
+
+  } else if (action.type === 'CHANGE_STATUS_FILTER') {
+    return {
+        statusFilterActive: action.statusFilterActive,
+        usersFilterActive: state.usersFilterActive,
+        conditionsFilterActive: state.conditionsFilterActive,
+        activePage: 1,
+        productsListSorted: state.productsListSorted,
+        productsByPage: state.productsByPage,
+        usersList: state.usersList,
+        conditionsList: state.conditionsList,
+        productsSelected: [],
+        checkAll: false,
+    }
+  } else if (action.type === 'CHANGE_CONDITION_FILTER') {
+    return {
+        statusFilterActive: state.statusFilterActive,
+        usersFilterActive: state.usersFilterActive,
+        conditionsFilterActive: action.conditionsFilterActive,
+        activePage: 1,
+        productsListSorted: state.productsListSorted,
+        productsByPage: state.productsByPage,
+        usersList: state.usersList,
+        conditionsList: state.conditionsList,
+        productsSelected: [],
+        checkAll: false,
+    }
+
+  } else if (action.type === 'UNCHECK_ALL'){
+    return {    
+      productsSelected: [],
+      checkAll: false,
+      activePage: state.activePage,
+      productsListSorted: state.productsListSorted,
+      productsByPage: state.productsByPage,
+      usersList: state.usersList,
+      conditionsList: state.conditionsList,
+      usersFilterActive: state.usersFilterActive,
+      statusFilterActive: state.statusFilterActive,
+      conditionsFilterActive: state.conditionsFilterActive,
+  
+    }
+  } else if (action.type === 'CHECK_ALL'){
+    
+    return {    
+      productsSelected: action.productsSelected,
+      checkAll: true,
+      activePage: state.activePage,
+      productsListSorted: state.productsListSorted,
+      productsByPage: state.productsByPage,
+      usersList: state.usersList,
+      conditionsList: state.conditionsList,
+      usersFilterActive: state.usersFilterActive,
+      statusFilterActive: state.statusFilterActive,
+      conditionsFilterActive: state.conditionsFilterActive,        
+    }
+
 
   } else {
     return state;
   }
 }
+
+
 
 
 
@@ -402,13 +493,62 @@ class ProductsSearched extends Component {
 
 class ActionProductsSelected extends Component {
   render(){
+    const options = [
+      { key: 'edit', icon: 'edit', text: 'Edit Post', value: 'edit' },
+      { key: 'delete', icon: 'delete', text: 'Remove Post', value: 'delete' },
+      { key: 'hide', icon: 'hide', text: 'Hide Post', value: 'hide' },
+    ]
     return (
-      <div>
-        <h1>Action Products Selected</h1>
-      </div>
+      <Button.Group color='teal'>
+    <Button>Save</Button>
+    <Dropdown options={options} floating button className='icon' />
+  </Button.Group>
     )
   }
 }
+
+class SelectAllItems extends Component {
+  
+  /*state = {
+    checked: this.props.checkAll,
+  }*/
+
+  
+  toggle = (e,data) => {
+    console.log(data.checked);
+    //this.setState({ checked: !this.state.checked})
+  
+    if (data.checked === false){
+      store.dispatch({
+        type: 'UNCHECK_ALL',
+      })  
+    } else {
+      store.dispatch({
+        type: 'CHECK_ALL',
+        productsSelected: this.props.productsListGrouped[this.props.activePage-1].map(item => item.uuid),
+      })
+    }  
+  }
+  
+  /*store.dispatch({
+    type: 'UNCHECK_ALL',
+    id: 
+  });*/
+
+  render(){
+    //console.log("AQUI ESTA LA INFORMACION BUENA: " + this.props.productsListGrouped[this.props.activePage-1].map(item => item.uuid));
+
+    return (
+            
+      <Table.HeaderCell collapsing>
+                <Checkbox toggle 
+                  checked={this.props.checkAll}
+                  onClick={this.toggle}> /></Checkbox>
+      </Table.HeaderCell>
+    )
+  }
+}
+
 
 class SortableProductList extends Component {
   
@@ -422,6 +562,7 @@ class SortableProductList extends Component {
     store.subscribe(() => this.forceUpdate());
   }*/
 
+  
   handleSort = clickedColumn => () => {    
     
     const { column, data, direction } = this.state
@@ -435,7 +576,7 @@ class SortableProductList extends Component {
       
       return
     }
-    
+  
     this.setState({
       data: data.reverse(),      
       direction: direction === 'ascending' ? 'descending' : 'ascending',      
@@ -453,9 +594,15 @@ class SortableProductList extends Component {
         
         <Table.Header>
             <Table.Row>
-              <Table.HeaderCell>
-                <Checkbox slider />
-              </Table.HeaderCell>
+              
+              <SelectAllItems 
+                productsListGrouped = {this.props.productsListGrouped} 
+                activePage = {this.props.activePage}
+                checkAll = {this.props.checkAll}
+              />
+
+
+
               <Table.HeaderCell sorted={column === 'authorId' ? direction: null}
                 onClick={this.handleSort('authorId')}>
                 User
@@ -524,8 +671,9 @@ class SelectableProduct extends Component {
         item = {this.props.item} 
         conditionsList = {this.props.conditionsList}
         usersList = {this.props.usersList}
-        //isChecked = {window.helpers.isProductChecked(this.props.productsSelected, this.props.item.uuid)}
-        productsSelected = {this.props.productsSelected} 
+        productsSelected = {this.props.productsSelected}
+        productsListGrouped = {this.props.productsListGrouped} 
+        activePage = {this.props.activePage} 
       />
     )
   }
@@ -539,21 +687,66 @@ class ProductsTableList extends Component {
     
     console.log("PPRPREPRE:" + this.props.activePage);
     console.log("PRODUCT GROUPED:" + this.props.productsListGrouped );
-      
+    
+    if (this.props.productsListGrouped.length > 0){
+
     return (
       
-      
-      //this.props.productsListSorted.chunk(this.props.productsByPage)[(this.props.activePage)-1].map((item) =>
       this.props.productsListGrouped[Number(this.props.activePage)-1].map((item) =>  
       <SelectableProduct 
         key={item.uuid} item = {item} 
         conditionsList = {this.props.conditionsList}
         usersList = {this.props.usersList}
-        productsSelected = {this.props.productsSelected} 
+        productsSelected = {this.props.productsSelected}
+        productsListGrouped = {this.props.productsListGrouped} 
+        activePage = {this.props.activePage} 
       />  
-    )
+      )
         
     )
+    } else {
+      return (
+        <Table.Row>
+              <Table.Cell collapsing>
+                
+              </Table.Cell>
+              
+              <Table.Cell>
+              </Table.Cell>
+              <Table.Cell>
+              </Table.Cell>
+              <Table.Cell>
+                </Table.Cell>
+              
+              <Table.Cell>
+              </Table.Cell>
+              <Table.Cell>
+
+
+
+              </Table.Cell>
+              <Table.Cell>
+              <Message
+                    warning
+                    header='Sorry, this option has not generated any results!'
+                    content='Try again using different parameters'
+                />
+              </Table.Cell>
+                
+
+
+              <Table.Cell>
+              </Table.Cell>
+              <Table.Cell>                
+              </Table.Cell>
+              <Table.Cell>
+              </Table.Cell>
+              <Table.Cell></Table.Cell>
+              <Table.Cell>
+              </Table.Cell>              
+        </Table.Row>
+      )
+    }
   }
 }
 
@@ -564,9 +757,13 @@ class ProductsTable extends Component {
    
    return (
       <div>
-        <SelectableProductList />
-        <Table sortable striped definition >
-          <SortableProductList productsListSorted = {this.props.productsListSorted} />
+        <Table sortable striped  >
+          <SortableProductList 
+            productsListSorted = {this.props.productsListSorted} 
+            productsListGrouped = {this.props.productsListGrouped} 
+            activePage = {this.props.activePage}
+            checkAll = {this.props.checkAll}
+          />
           <Table.Body>
             <ProductsTableList 
               productsListGrouped = {this.props.productsListGrouped} 
@@ -588,32 +785,162 @@ class ProductsTable extends Component {
   }
 }
 
+
+
 class ProductsFilterByUser extends Component {
   
-  componentDidMount(){
-    store.subscribe(() => this.forceUpdate());
+  state = {}
+
+  handleChange = (e, {value }) => {
+    store.dispatch(
+      {
+        type: 'CHANGE_USER_FILTER',
+        usersFilterActive: value,
+      }
+    )
+    this.setState({value})
   }
 
+  /*componentDidMount(){
+    store.subscribe(() => this.forceUpdate());
+  }*/
+
   render(){
+    const { value } = this.state;
+    const tempOptionUserList = this.props.usersList.map(item => {
+      return {key: item.id, value: item.id, text: item.username}
+    });
+
+    const optionUserList = [{key: 'ALL', value: 'ALL', text: "All Users"}, ...tempOptionUserList];
+
+    
+    console.log("My lista de usuarios" + optionUserList[0].text);
+    
+
     return (
-      <div>
-        <h1>Product Filter By User</h1>
-      </div>
+      <span>
+          Show me products created by{' '}
+          <big><Dropdown inline options={optionUserList} defaultValue={optionUserList[0].value} value = {value} onChange={this.handleChange} /></big>     
+   
+      </span>
     )
   }
 }
 
-class ProductsFilterByStatus extends Component {
-  
+
+class ProductsFilterByCondition extends Component {
+  state = {value: 'ALL'}
+
+  handleChange = (e, {value }) => {
+    store.dispatch(
+      {
+        type: 'CHANGE_CONDITION_FILTER',
+        conditionsFilterActive: value,
+      })
+    
+     this.setState({value})
+  }
+
   componentDidMount(){
     store.subscribe(() => this.forceUpdate());
   }
 
   render(){
     return (
-      <div>
-        <h1>Products Filter by Status</h1>
-      </div>
+      
+      <Form floated='left'>
+        <Form.Group inline>
+          <label>Filter by Condition: </label>
+          <Form.Field
+            control={Radio}
+            label='All'
+            value='ALL'
+            checked={this.state.value === 'ALL'}
+            onChange={this.handleChange}            
+          />
+          <Form.Field
+            control={Radio}
+            label='New'
+            value='1'
+            checked={this.state.value === '1'}
+            onChange={this.handleChange}            
+          />
+          <Form.Field
+            control={Radio}
+            label='New (Other)'
+            value='2'
+            checked={this.state.value === '2'}
+            onChange={this.handleChange}            
+          />
+          <Form.Field
+            control={Radio}
+            label='Used'  
+            value='3'
+            checked={this.state.value === '3'}
+            onChange={this.handleChange}          
+          />
+        </Form.Group>
+      </Form>      
+    )
+  }
+}
+
+
+
+class ProductsFilterByStatus extends Component {
+  
+  state = {value: 'ALL'}
+
+  handleChange = (e, {value }) => {
+    store.dispatch(
+      {
+        type: 'CHANGE_STATUS_FILTER',
+        statusFilterActive: value,
+      })
+    
+     this.setState({value})
+  }
+
+  componentDidMount(){
+    store.subscribe(() => this.forceUpdate());
+  }
+
+  render(){
+    return (
+      
+      <Form floated='left'>
+        <Form.Group inline>
+          <label>Filter by Status: </label>
+          <Form.Field
+            control={Radio}
+            label='All'
+            value='ALL'
+            checked={this.state.value === 'ALL'}
+            onChange={this.handleChange}            
+          />
+          <Form.Field
+            control={Radio}
+            label='Online'
+            value='online'
+            checked={this.state.value === 'online'}
+            onChange={this.handleChange}            
+          />
+          <Form.Field
+            control={Radio}
+            label='Offline'
+            value='offline'
+            checked={this.state.value === 'offline'}
+            onChange={this.handleChange}            
+          />
+          <Form.Field
+            control={Radio}
+            label='Error'  
+            value='error'
+            checked={this.state.value === 'error'}
+            onChange={this.handleChange}          
+          />
+        </Form.Group>
+      </Form>      
     )
   }
 }
@@ -626,10 +953,23 @@ class ProductsDashboardFilter extends Component {
 
   render() {
     return (
-      <div>
-        <ProductsFilterByStatus />
-        <ProductsFilterByUser />
-      </div>
+          
+      <Grid  padded columns={3}>
+          <Grid.Column size={4} >
+            
+            <Segment compact><ProductsFilterByUser usersList = {this.props.usersList} /></Segment>
+            
+          </Grid.Column>
+          <Grid.Column size={6}>
+          <Segment compact><ProductsFilterByStatus /></Segment>
+          </Grid.Column>
+          <Grid.Column size={6}>
+          <Segment compact><ProductsFilterByCondition /></Segment>
+          </Grid.Column>
+      </Grid>
+
+      
+         
     )
   }
 }
@@ -694,7 +1034,15 @@ class ProductsDashboard extends Component {
         <ActionProductsSelected /> 
         <ProductsSearched />
 
-        <ProductsDashboardFilter />
+        <ProductsDashboardFilter 
+          productsByPage = {this.props.productsByPage} 
+          productsListGrouped = {this.props.productsListGrouped} 
+          activePage = {this.props.activePage}
+          productsSelected = {this.props.productsSelected}
+          conditionsList = {this.props.conditionsList}
+          usersList = {this.props.usersList}
+          productsListSorted = {this.props.productsListSorted}
+        />
         <ProductsTable
           productsByPage = {this.props.productsByPage} 
           productsListGrouped = {this.props.productsListGrouped} 
@@ -702,7 +1050,8 @@ class ProductsDashboard extends Component {
           productsSelected = {this.props.productsSelected}
           conditionsList = {this.props.conditionsList}
           usersList = {this.props.usersList}
-          productsListSorted = {this.props.productsListSorted} 
+          productsListSorted = {this.props.productsListSorted}
+          checkAll = {this.props.checkAll} 
         />
         
         <ProductsDashboardPagination 
@@ -727,8 +1076,80 @@ class App extends Component {
   
   render() {
     const state = store.getState();
-    const productsList = state.productsList;
+    
+    const usersFilterActive = state.usersFilterActive;
+    const statusFilterActive = state.statusFilterActive;
+    const conditionsFilterActive = state.conditionsFilterActive;
+/*
+    function checkUsersFilterActive(usersFilterActive){
+      if (usersFilterActive !== 'ALL'){
+        if (statusFilterActive !== 'ALL'){
+          return state.productsListSorted.filter(item => item.authorId === usersFilterActive).filter(item => item.status === statusFilterActive);
+        } else {
+
+        }
+      
+      
+      } else {
+        return state.productsListSorted;
+      }
+    }
+*/
+  function checkUsersFilterActive(list, usersFilterActive){
+    if (usersFilterActive !== 'ALL'){
+      return list.filter(item => item.authorId === usersFilterActive)
+    } else {
+      return list;
+    }
+  }
+
+  function checkStatusFilterActive(list, statusFilterActive){
+    if (statusFilterActive !== 'ALL'){
+      return list.filter(item => item.status === statusFilterActive)
+    } else {
+      return list;
+    }
+  }
+
+  function checkConditionsFilterActive(list, conditionsFilterActive){
+    if (conditionsFilterActive !== 'ALL'){
+      return list.filter(item => item.condition === conditionsFilterActive)
+    } else {
+      return list;
+    }
+  }
+
+/*
+  function checkUsersFilterActive(usersFilterActive){
+    if (usersFilterActive !== 'ALL'){
+      return state.productsListSorted.filter(item => item.authorId === usersFilterActive)
+    } else {
+      return state.productsListSorted;
+    }
+  }
+*/
+
+    /*function checkStatusFilterActive(statusFilterActive){
+      console.log("status: " + statusFilterActive)
+      if (statusFilterActive !== 'ALL'){
+        return state.productsListSorted.filter(item => item.status === usersFilterActive);
+      } else {
+        return state.productsListSorted;
+      }
+    }*/
+
     const productsListSorted = state.productsListSorted;
+    
+    const productsListFiltered = 
+      checkConditionsFilterActive(
+
+      checkStatusFilterActive(checkUsersFilterActive(productsListSorted, usersFilterActive), statusFilterActive), conditionsFilterActive)   
+    
+
+
+
+    console.log("PRODUCT FILTERED: " + productsListFiltered); 
+    
     const productsByPage = state.productsByPage;  
     const activePage = state.activePage;
     const productsSelected = state.productsSelected;
@@ -737,19 +1158,24 @@ class App extends Component {
     console.log("EL ARRAY ORDENADO: " + productsListSorted);
     //console.log("GROUPADO: " + productsListSorted.chunk(productsByPage));
     //const productsListGrouped = productsListSorted.chunk();
+    const checkAll = state.checkAll;
     
     console.log("Active Page in App: " + activePage);
     return (
       <div>
         {console.log(activePage)}
         <ProductsDashboard 
-          productsListGrouped = {productsListSorted.chunk(productsByPage)} 
+          productsListGrouped = {productsListFiltered.chunk(productsByPage)} 
           productsByPage = {productsByPage}
           activePage = {activePage}
           productsSelected = {productsSelected}
           conditionsList = {conditionsList}
           usersList = {usersList}
-          productsListSorted = {productsListSorted}
+          //productsListSorted = {productsListSorted}
+          productsListSorted = {productsListFiltered}
+          usersFilterActive = {usersFilterActive}
+          statusFilterActive = {statusFilterActive}
+          checkAll = {checkAll}
         />
       </div>
     );
