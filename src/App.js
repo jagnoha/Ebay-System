@@ -494,14 +494,16 @@ class ProductsSearched extends Component {
 class ActionProductsSelected extends Component {
   render(){
     const options = [
-      { key: 'edit', icon: 'edit', text: 'Edit Post', value: 'edit' },
-      { key: 'delete', icon: 'delete', text: 'Remove Post', value: 'delete' },
-      { key: 'hide', icon: 'hide', text: 'Hide Post', value: 'hide' },
+      { key: 'online', icon: 'globe', text: 'Switch to Online', value: 'online' },
+      { key: 'offline', icon: 'level down', text: 'Switch to Offline', value: 'offline' },
+      { key: 'delete', icon: 'delete', text: 'Delete', value: 'delete' },
     ]
     return (
       <Button.Group color='teal'>
-    <Button>Save</Button>
-    <Dropdown options={options} floating button className='icon' />
+    <Button disabled = {this.props.productsSelected.length < 1 ? true : false}>
+      Action to {this.props.productsSelected.length} selected products</Button>
+    <Dropdown disabled = {this.props.productsSelected.length < 1 ? true : false} 
+    options={options} floating button className='icon' />
   </Button.Group>
     )
   }
@@ -1031,7 +1033,7 @@ class ProductsDashboard extends Component {
     
     return (
       <div>
-        <ActionProductsSelected /> 
+        <ActionProductsSelected productsSelected = {this.props.productsSelected} /> 
         <ProductsSearched />
 
         <ProductsDashboardFilter 
