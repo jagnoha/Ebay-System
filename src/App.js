@@ -529,7 +529,23 @@ class ProductForm extends Component {
 
 class Product extends Component {
   
-  state = { modalOpen: false }
+  
+  
+  state = { modalOpen: false, action: 'online'}
+
+  checkStatus = () => {
+    if (this.state.action !== this.props.item.status){
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  checkButton = (e, data) => {
+    this.setState({
+      action: data.value,
+    })
+  }
 
   handleOpen = () => this.setState({ modalOpen: true })
 
@@ -555,6 +571,19 @@ class Product extends Component {
   }
 
   render() {
+    
+    /*function checkApplyOptions(option, status){
+      if (option === )
+    }*/
+
+    const options = [
+      { key: 'online', icon: 'globe', text: 'Switch to Online', value: 'online' },
+      { key: 'offline', icon: 'level down', text: 'Bring to Offline', value: 'offline' },
+      { key: 'delete', icon: 'delete', text: 'Delete', value: 'delete' },
+    ]
+
+    
+
     return (
       <Table.Row key={this.props.item.uuid}>
               <Table.Cell collapsing>
@@ -619,29 +648,45 @@ class Product extends Component {
               <Table.Cell collapsing>
                 
                 <Modal
-                  closeIcon
-                  closeOnDimmerClick={false}
-                  closeOnEscape={false}
-                  trigger={<Button icon='edit'onClick={this.handleOpen}/>}                  
+                  //closeIcon
+                  //closeOnDimmerClick={false}
+                  //closeOnEscape={false}
+                  trigger={<Button icon='edit'onClick={this.handleOpen}/>}
+                  open={this.state.modalOpen}                  
                   >
                   <Modal.Header>
-                    <h1>Products Editor</h1>
-                    <h3>{this.props.item.title}</h3>
+                    
+                        <h1>Products Editor</h1>
+                        <h3>{this.props.item.title}</h3>
+                     
+                        <h4>{this.props.item.status}</h4>
+                      
 
+                    
                   </Modal.Header>
                   <Modal.Content scrolling>
                     <ProductForm key={this.props.item.uuid} id={this.props.item.uuid} item={this.props.item} />
                   </Modal.Content>
                   <Modal.Actions>
-                  <Button color='red' onClick={this.close}>
-                      <Icon name='cancel'/> Cancel
-                    </Button>
-                    <Button color='red'>
-                      <Icon name='remove'/> Delete
-                    </Button>
-                    <Button color='green'>
+                  <Button color='green'>
                       <Icon name='save'/> Save
                     </Button>
+                  
+
+                    <Button.Group color='teal'>
+                    <Dropdown 
+                        defaultValue={this.state.action}
+                        options={options} floating button className='icon' onChange={this.checkButton} />
+                      <Button disabled={this.checkStatus()}>
+                        Apply
+                      </Button>
+                        
+                    </Button.Group>
+                    <Button color='red' onClick={this.handleClose}>
+                      <Icon name='cancel'/> Cancel
+                    </Button>
+                    
+                    
                     
                   </Modal.Actions>
                 </Modal>
@@ -730,10 +775,11 @@ class ActionProductsSelected extends Component {
     ]
     return (
       <Button.Group color='teal'>
-    <Button disabled = {this.props.productsSelected.length < 1 ? true : false}>
-      Action on {this.props.productsSelected.length} selected</Button>
-    <Dropdown disabled = {this.props.productsSelected.length < 1 ? true : false} 
+      <Dropdown defaultValue='online' disabled = {this.props.productsSelected.length < 1 ? true : false} 
     options={options} floating button className='icon' />
+    <Button disabled = {this.props.productsSelected.length < 1 ? true : false}>
+      Apply on {this.props.productsSelected.length} selected</Button>
+    
   </Button.Group>
     )
   }
