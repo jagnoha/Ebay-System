@@ -197,7 +197,7 @@ let productsServer = [
     ],
     location: [],
     quantity: '1',
-    condition: '2',
+    condition: '1',
     conditionDescription: 'Open Box',
     otherCondition: '',
     price: '0.00',
@@ -462,7 +462,7 @@ function reducer(state, action) {
     return {    
       productsSelected: [],
       checkAll: false,
-      activePage: state.activePage,
+      activePage: 1,
       productsListSorted: state.productsListSorted,
       productsByPage: state.productsByPage,
       usersList: state.usersList,
@@ -492,13 +492,48 @@ const store = createStore(reducer, initialState);
 
 
 
+class ProductForm extends Component {
 
+  
+
+  render(){
+    return (
+      <div>
+        <Form >
+          <h1>DKLKFDLSFKSDF</h1>
+          <h1>DKLKFDLSFKSDF</h1>
+          <h1>DKLKFDLSFKSDF</h1>
+          <h1>DKLKFDLSFKSDF</h1>
+          <h1>DKLKFDLSFKSDF</h1>
+          <h1>DKLKFDLSFKSDF</h1>
+          <h1>DKLKFDLSFKSDF</h1>
+          <h1>DKLKFDLSFKSDF</h1>
+          <h1>DKLKFDLSFKSDF</h1>
+          <h1>DKLKFDLSFKSDF</h1>
+          <h1>DKLKFDLSFKSDF</h1>
+          <h1>DKLKFDLSFKSDF</h1>
+          <h1>DKLKFDLSFKSDF</h1>
+          <h1>DKLKFDLSFKSDF</h1>
+          <h1>DKLKFDLSFKSDF</h1>
+          <h1>DKLKFDLSFKSDF</h1>
+          <h1>DKLKFDLSFKSDF</h1>
+
+        </Form>
+      </div>
+    )
+  }
+}
 
 
 
 
 class Product extends Component {
   
+  state = { modalOpen: false }
+
+  handleOpen = () => this.setState({ modalOpen: true })
+
+  handleClose = () => this.setState({ modalOpen: false })
   
   handleChecked = onClick => (e,data) => {
 
@@ -516,7 +551,7 @@ class Product extends Component {
       })
     }
     
-
+    
   }
 
   render() {
@@ -582,7 +617,37 @@ class Product extends Component {
               </Table.Cell>
               <Table.Cell>{this.props.item.timestamp}</Table.Cell>
               <Table.Cell collapsing>
-                <Button icon='edit' />
+                
+                <Modal
+                  closeIcon
+                  closeOnDimmerClick={false}
+                  closeOnEscape={false}
+                  trigger={<Button icon='edit'onClick={this.handleOpen}/>}                  
+                  >
+                  <Modal.Header>
+                    <h1>Products Editor</h1>
+                    <h3>{this.props.item.title}</h3>
+
+                  </Modal.Header>
+                  <Modal.Content scrolling>
+                    <ProductForm key={this.props.item.uuid} id={this.props.item.uuid} item={this.props.item} />
+                  </Modal.Content>
+                  <Modal.Actions>
+                  <Button color='red' onClick={this.close}>
+                      <Icon name='cancel'/> Cancel
+                    </Button>
+                    <Button color='red'>
+                      <Icon name='remove'/> Delete
+                    </Button>
+                    <Button color='green'>
+                      <Icon name='save'/> Save
+                    </Button>
+                    
+                  </Modal.Actions>
+                </Modal>
+
+
+
                 <Button icon='trash' />
               </Table.Cell>              
         </Table.Row>
@@ -635,7 +700,7 @@ class ProductsSearched extends Component {
             
             
           />
-          <Button icon='search' onEnter={this.handleClick} onClick={this.handleClick} />
+          <Button icon='search' onClick={this.handleClick} />
       </div>
       )
     } else {
@@ -647,7 +712,7 @@ class ProductsSearched extends Component {
             value={this.props.valueSearch}
             
             />
-            <Button icon='search' onEnter={this.handleClick} onClick={this.handleClick} />
+            <Button icon='search' onClick={this.handleClick} />
           
         </div>
         )
@@ -817,15 +882,7 @@ class SortableProductList extends Component {
   }
 }
 
-class SelectableProductList extends Component {
-  render(){
-    return (
-      <div>
-        <h1>Selectable Product List</h1>
-      </div>
-    )
-  }
-}
+
 
 class SelectableProduct extends Component {
   
@@ -985,7 +1042,7 @@ class ProductsFilterByUser extends Component {
     const optionUserList = [{key: 'ALL', value: 'ALL', text: "All Users"}, ...tempOptionUserList];
 
     
-    console.log("My lista de usuarios" + optionUserList[0].text);
+    //console.log("My lista de usuarios" + optionUserList[0].text);
     
 
     return (
@@ -1257,7 +1314,7 @@ class App extends Component {
 
 
     function checkSearchFilter(list, valueSearch){
-      if (checkedSearch === true){
+      if (checkedSearch === true && list.length > 0){
         return list.filter(item => item.title.toLowerCase().includes(valueSearch.toLowerCase()) || 
         item.partNumbers[0].toLowerCase().includes(valueSearch.toLowerCase()) ||
         item.sku.toLowerCase().includes(valueSearch.toLowerCase()))
@@ -1298,17 +1355,6 @@ class App extends Component {
         checkConditionsFilterActive(checkStatusFilterActive(checkUsersFilterActive(checkSearchFilter(productsListSorted, valueSearch),usersFilterActive),
         statusFilterActive),conditionsFilterActive)
 
-        /*
-        checkConditionsFilterActive(
-        checkStatusFilterActive(
-        checkUsersFilterActive(
-        checkSearchFilter(
-        productsListSorted) 
-        usersFilterActive), 
-        statusFilterActive), 
-        conditionsFilterActive),
-        valueSearch)
-        */
     console.log("PRODUCT FILTERED: " + productsListFiltered); 
     
     const productsByPage = state.productsByPage;  
@@ -1328,7 +1374,6 @@ class App extends Component {
         {console.log(activePage)}
         <ProductsDashboard 
           productsListGrouped = {productsListFiltered.chunk(productsByPage)}
-
           productsByPage = {productsByPage}
           activePage = {activePage}
           productsSelected = {productsSelected}
