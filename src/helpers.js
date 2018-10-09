@@ -22,6 +22,14 @@ window.helpers = (function () {
         return list.filter((item) => item.id === id)[0].username; 
     }
 
+    function getBrandFromId(list, id){
+        return list.filter((item) => item.id === id)[0].value;
+    }
+
+    function getLocationFromId(list, id){
+        return list.filter((item) => item.id === id)[0].value;
+    }
+
     function getColorConnection(status){
         if (status === 'online'){
           return 'green';
@@ -54,6 +62,8 @@ window.helpers = (function () {
         priceWarning,
         outOfStock,
         isProductChecked,
+        getBrandFromId,
+        getLocationFromId,
     }
 
 }())

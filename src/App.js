@@ -43,18 +43,48 @@ let users = [
 
 let conditions = [
   {
-    id: '1',
+    id: '0',
     type: 'New'
   },
   {
-    id: '2',
+    id: '1',
     type: 'New (Other)'
   },
   {
-    id: '3',
+    id: '2',
     type: 'Used'
   }
 ];
+
+let locations = [
+  {
+    id: '1',
+    value: '170M3'
+  },
+  {
+    id: '2',
+    value: '170M4',
+  },
+  {
+    id: '3',
+    value: '136M5',
+  },
+]
+
+let brands = [
+  {
+    id: '1',
+    value: 'Ford',  
+  },
+  {
+    id: '2',
+    value: 'Mopar',
+  },
+  {
+    id: '3',
+    value: 'Motorcraft',
+  }
+]
 
 
 let productsServer = [
@@ -65,7 +95,7 @@ let productsServer = [
     sku: 'ABC123',
     title: 'Ford ** 3PCS ** NUT N620481-S2',
     description: 'Ford ** 3PCS ** NUT N620481-S2',
-    brand: 'Ford',
+    brand: '1',
     partNumbers: [
       'N620481-S2', 'N620481-AS2'
     ],
@@ -75,10 +105,10 @@ let productsServer = [
       'http://zeemplex.com/marketplace/docroot/sites/default/files/2018-05/1527119775898-89732727.jpg'
     ],
     location: [
-      '170M3'
+      '1'
     ],
     quantity: '0',
-    condition: '2',
+    condition: '1',
     conditionDescription: 'Bag Damage',
     otherCondition: '',
     price: '0.00',
@@ -119,7 +149,7 @@ let productsServer = [
     sku: 'UJD2231',
     title: 'Ford NUT W707612-S300',
     description: 'Ford NUT W707612-S300 ',
-    brand: 'Ford',
+    brand: '1',
     partNumbers: [
       'W707612-S300'
     ],
@@ -128,10 +158,10 @@ let productsServer = [
       'http://zeemplex.com/marketplace/docroot/sites/default/files/2018-05/1527119899679-2118847462.jpg'
     ],
     location: [
-      '170M4', '136M5'
+      '2', '3'
     ],
     quantity: '2',
-    condition: '1',
+    condition: '0',
     conditionDescription: '',
     otherCondition: '',
     price: '25.00',
@@ -157,7 +187,7 @@ let productsServer = [
     sku: '123431FFSD',
     title: 'Mopar TAILGATE DOOR 55396984AD',
     description: 'Mopar TAILGATE DOOR 55396984AD',
-    brand: 'Mopar',
+    brand: '2',
     partNumbers: [
       '55396984AD'
     ],
@@ -167,7 +197,7 @@ let productsServer = [
     ],
     location: [],
     quantity: '1',
-    condition: '3',
+    condition: '2',
     conditionDescription: 'Open Box',
     otherCondition: '',
     price: '0.00',
@@ -193,7 +223,7 @@ let productsServer = [
     sku: '12DDSA3431FFSD',
     title: 'Mopar TAILGATE DOOR 5DDSAD5396984AD',
     description: 'Mopar TAILGATE DOOR 5DDSAS5396984AD',
-    brand: 'Motorcraft',
+    brand: '3',
     partNumbers: [
       '55396DDSA984AD'
     ],
@@ -203,7 +233,7 @@ let productsServer = [
     ],
     location: [],
     quantity: '1',
-    condition: '3',
+    condition: '2',
     conditionDescription: 'Open Box',
     otherCondition: '',
     price: '0.00',
@@ -232,6 +262,8 @@ const initialState = {
   activePage: 1,
   productsSelected: [],
   conditionsList: conditions,
+  brandsList: brands,
+  locationsList: locations,
   usersList: users,
   usersFilterActive: 'ALL',
   statusFilterActive: 'ALL',
@@ -248,6 +280,8 @@ function reducer(state, action) {
       productsByPage: state.productsByPage,
       usersList: state.usersList,
       conditionsList: state.conditionsList,
+      brandsList: state.brandsList,
+      locationsList: state.locationsList,
       activePage: state.activePage,
       usersFilterActive: state.usersFilterActive,
       statusFilterActive: state.statusFilterActive,
@@ -266,6 +300,8 @@ function reducer(state, action) {
       productsByPage: state.productsByPage,
       usersList: state.usersList,
       conditionsList: state.conditionsList,
+      brandsList: state.brandsList,
+      locationsList: state.locationsList,
       usersFilterActive: state.usersFilterActive,
       statusFilterActive: state.statusFilterActive,
       conditionsFilterActive: state.conditionsFilterActive,        
@@ -281,6 +317,8 @@ function reducer(state, action) {
       productsByPage: state.productsByPage,
       usersList: state.usersList,
       conditionsList: state.conditionsList,
+      brandsList: state.brandsList,
+      locationsList: state.locationsList,
       usersFilterActive: state.usersFilterActive,
       statusFilterActive: state.statusFilterActive,
       conditionsFilterActive: state.conditionsFilterActive,        
@@ -293,6 +331,8 @@ function reducer(state, action) {
       productsByPage: state.productsByPage,
       usersList: state.usersList,
       conditionsList: state.conditionsList,
+      brandsList: state.brandsList,
+      locationsList: state.locationsList,
       productsSelected: [],
       checkAll: false,
       usersFilterActive: state.usersFilterActive,
@@ -308,6 +348,8 @@ function reducer(state, action) {
         productsByPage: state.productsByPage,
         usersList: state.usersList,
         conditionsList: state.conditionsList,
+        brandsList: state.brandsList,
+      locationsList: state.locationsList,
         productsSelected: [],
         checkAll: false,
         statusFilterActive: state.statusFilterActive,
@@ -324,6 +366,8 @@ function reducer(state, action) {
         productsByPage: state.productsByPage,
         usersList: state.usersList,
         conditionsList: state.conditionsList,
+        brandsList: state.brandsList,
+        locationsList: state.locationsList,
         productsSelected: [],
         checkAll: false,
     }
@@ -337,6 +381,8 @@ function reducer(state, action) {
         productsByPage: state.productsByPage,
         usersList: state.usersList,
         conditionsList: state.conditionsList,
+        brandsList: state.brandsList,
+        locationsList: state.locationsList,
         productsSelected: [],
         checkAll: false,
     }
@@ -350,6 +396,8 @@ function reducer(state, action) {
       productsByPage: state.productsByPage,
       usersList: state.usersList,
       conditionsList: state.conditionsList,
+      brandsList: state.brandsList,
+      locationsList: state.locationsList,
       usersFilterActive: state.usersFilterActive,
       statusFilterActive: state.statusFilterActive,
       conditionsFilterActive: state.conditionsFilterActive,
@@ -365,6 +413,8 @@ function reducer(state, action) {
       productsByPage: state.productsByPage,
       usersList: state.usersList,
       conditionsList: state.conditionsList,
+      brandsList: state.brandsList,
+      locationsList: state.locationsList,
       usersFilterActive: state.usersFilterActive,
       statusFilterActive: state.statusFilterActive,
       conditionsFilterActive: state.conditionsFilterActive,        
@@ -445,7 +495,9 @@ class Product extends Component {
                 
                 {window.helpers.getConditionFromId(this.props.conditionsList, this.props.item.condition)}
               </Table.Cell>
-              <Table.Cell>{this.props.item.brand}</Table.Cell>
+              <Table.Cell>
+              {window.helpers.getBrandFromId(this.props.brandsList, this.props.item.brand )}
+              </Table.Cell>
               <Table.Cell>
                 <div>{this.props.item.partNumbers[0]}</div><span className='App-secondary-table-title'>{this.props.item.uuid}</span>  
               </Table.Cell>
@@ -457,7 +509,9 @@ class Product extends Component {
                 <h3>{this.props.item.title}</h3>
                 <div>{this.props.item.location.length > 0 ? 
                   this.props.item.location.map((item, index) => {
-                    return <Label key={index} color='black'><Icon name='warehouse' />{item}</Label>;
+                    return <Label key={index} color='black'><Icon name='warehouse' />
+                     {window.helpers.getBrandFromId(this.props.locationsList, item )}
+                    </Label>;
                   }) 
                   : <Label color='teal'><Icon name='warning sign' />Still in the pallet</Label> }
                 </div> 
@@ -675,7 +729,9 @@ class SelectableProduct extends Component {
         usersList = {this.props.usersList}
         productsSelected = {this.props.productsSelected}
         productsListGrouped = {this.props.productsListGrouped} 
-        activePage = {this.props.activePage} 
+        activePage = {this.props.activePage}
+        brandsList = {this.props.brandsList}
+        locationsList = {this.props.locationsList} 
       />
     )
   }
@@ -701,7 +757,9 @@ class ProductsTableList extends Component {
         usersList = {this.props.usersList}
         productsSelected = {this.props.productsSelected}
         productsListGrouped = {this.props.productsListGrouped} 
-        activePage = {this.props.activePage} 
+        activePage = {this.props.activePage}
+        brandsList = {this.props.brandsList}
+        locationsList = {this.props.locationsList} 
       />  
       )
         
@@ -774,7 +832,9 @@ class ProductsTable extends Component {
               productsSelected = {this.props.productsSelected} 
               conditionsList = {this.props.conditionsList}
               usersList = {this.props.usersList}
-              productsListSorted = {this.props.productsListSorted} 
+              productsListSorted = {this.props.productsListSorted}
+              brandsList = {this.props.brandsList}
+              locationsList = {this.props.locationsList}  
             />
           </Table.Body>
         </Table>
@@ -863,22 +923,22 @@ class ProductsFilterByCondition extends Component {
           <Form.Field
             control={Radio}
             label='New'
+            value='0'
+            checked={this.state.value === '0'}
+            onChange={this.handleChange}            
+          />
+          <Form.Field
+            control={Radio}
+            label='New (Other)'
             value='1'
             checked={this.state.value === '1'}
             onChange={this.handleChange}            
           />
           <Form.Field
             control={Radio}
-            label='New (Other)'
+            label='Used'  
             value='2'
             checked={this.state.value === '2'}
-            onChange={this.handleChange}            
-          />
-          <Form.Field
-            control={Radio}
-            label='Used'  
-            value='3'
-            checked={this.state.value === '3'}
             onChange={this.handleChange}          
           />
         </Form.Group>
@@ -1053,7 +1113,9 @@ class ProductsDashboard extends Component {
           conditionsList = {this.props.conditionsList}
           usersList = {this.props.usersList}
           productsListSorted = {this.props.productsListSorted}
-          checkAll = {this.props.checkAll} 
+          checkAll = {this.props.checkAll}
+          brandsList = {this.props.brandsList}
+          locationsList = {this.props.locationsList} 
         />
         
         <ProductsDashboardPagination 
@@ -1082,73 +1144,40 @@ class App extends Component {
     const usersFilterActive = state.usersFilterActive;
     const statusFilterActive = state.statusFilterActive;
     const conditionsFilterActive = state.conditionsFilterActive;
-/*
-    function checkUsersFilterActive(usersFilterActive){
+
+    function checkUsersFilterActive(list, usersFilterActive){
       if (usersFilterActive !== 'ALL'){
-        if (statusFilterActive !== 'ALL'){
-          return state.productsListSorted.filter(item => item.authorId === usersFilterActive).filter(item => item.status === statusFilterActive);
-        } else {
-
-        }
-      
-      
+        return list.filter(item => item.authorId === usersFilterActive)
       } else {
-        return state.productsListSorted;
+        return list;
       }
     }
-*/
-  function checkUsersFilterActive(list, usersFilterActive){
-    if (usersFilterActive !== 'ALL'){
-      return list.filter(item => item.authorId === usersFilterActive)
-    } else {
-      return list;
-    }
-  }
 
-  function checkStatusFilterActive(list, statusFilterActive){
-    if (statusFilterActive !== 'ALL'){
-      return list.filter(item => item.status === statusFilterActive)
-    } else {
-      return list;
-    }
-  }
-
-  function checkConditionsFilterActive(list, conditionsFilterActive){
-    if (conditionsFilterActive !== 'ALL'){
-      return list.filter(item => item.condition === conditionsFilterActive)
-    } else {
-      return list;
-    }
-  }
-
-/*
-  function checkUsersFilterActive(usersFilterActive){
-    if (usersFilterActive !== 'ALL'){
-      return state.productsListSorted.filter(item => item.authorId === usersFilterActive)
-    } else {
-      return state.productsListSorted;
-    }
-  }
-*/
-
-    /*function checkStatusFilterActive(statusFilterActive){
-      console.log("status: " + statusFilterActive)
+    function checkStatusFilterActive(list, statusFilterActive){
       if (statusFilterActive !== 'ALL'){
-        return state.productsListSorted.filter(item => item.status === usersFilterActive);
+        return list.filter(item => item.status === statusFilterActive)
       } else {
-        return state.productsListSorted;
+        return list;
       }
-    }*/
+    }
+
+    function checkConditionsFilterActive(list, conditionsFilterActive){
+      if (conditionsFilterActive !== 'ALL'){
+        return list.filter(item => item.condition === conditionsFilterActive)
+      } else {
+        return list;
+      }
+    }
 
     const productsListSorted = state.productsListSorted;
     
     const productsListFiltered = 
-      checkConditionsFilterActive(
-
-      checkStatusFilterActive(checkUsersFilterActive(productsListSorted, usersFilterActive), statusFilterActive), conditionsFilterActive)   
-    
-
-
+        checkConditionsFilterActive(
+        checkStatusFilterActive(
+        checkUsersFilterActive(productsListSorted, 
+        usersFilterActive), 
+        statusFilterActive), 
+        conditionsFilterActive)   
 
     console.log("PRODUCT FILTERED: " + productsListFiltered); 
     
@@ -1157,9 +1186,10 @@ class App extends Component {
     const productsSelected = state.productsSelected;
     const usersList = state.usersList;
     const conditionsList = state.conditionsList;
+    const brandsList = state.brandsList;
+    const locationsList = state.locationsList;
     console.log("EL ARRAY ORDENADO: " + productsListSorted);
-    //console.log("GROUPADO: " + productsListSorted.chunk(productsByPage));
-    //const productsListGrouped = productsListSorted.chunk();
+    
     const checkAll = state.checkAll;
     
     console.log("Active Page in App: " + activePage);
@@ -1172,12 +1202,13 @@ class App extends Component {
           activePage = {activePage}
           productsSelected = {productsSelected}
           conditionsList = {conditionsList}
-          usersList = {usersList}
-          //productsListSorted = {productsListSorted}
+          usersList = {usersList}          
           productsListSorted = {productsListFiltered}
           usersFilterActive = {usersFilterActive}
           statusFilterActive = {statusFilterActive}
           checkAll = {checkAll}
+          brandsList = {brandsList}
+          locationsList = {locationsList}
         />
       </div>
     );
