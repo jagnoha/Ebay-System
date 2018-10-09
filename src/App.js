@@ -3,8 +3,8 @@ import { createStore } from 'redux';
 import logo from './logo.svg';
 import './App.css';
 import './helpers.js';
-import { Label, Form, Radio, Pagination, Container, Divider, Segment, Grid, Table, Modal, 
-  Dropdown, Image, Item, Checkbox, Button, Icon, Message } from 'semantic-ui-react'
+import { Label, Input, Search, Form, Radio, Pagination, Container, Divider, Segment, Grid, Table, Modal, 
+  Dropdown, Image, Item, Checkbox, Button, Icon, Message, Header } from 'semantic-ui-react'
 import _ from 'lodash'
 
 
@@ -269,7 +269,9 @@ const initialState = {
   statusFilterActive: 'ALL',
   conditionsFilterActive: 'ALL',        
   checkAll: false,
-};
+  valueSearch: '',
+  checkedSearch: false,
+}
 
 function reducer(state, action) {
   
@@ -287,6 +289,8 @@ function reducer(state, action) {
       statusFilterActive: state.statusFilterActive,
       conditionsFilterActive: state.conditionsFilterActive,        
       checkAll: false,
+      valueSearch: state.valueSearch,
+      checkedSearch: state.checkedSearch,
     };
 
   } else if (action.type === 'ADD_PRODUCT_SELECTED'){
@@ -306,6 +310,8 @@ function reducer(state, action) {
       statusFilterActive: state.statusFilterActive,
       conditionsFilterActive: state.conditionsFilterActive,        
       checkAll: state.checkAll,
+      valueSearch: state.valueSearch,
+      checkedSearch: state.checkedSearch,
     }
 
   } else if (action.type === 'DELETE_PRODUCT_SELECTED'){
@@ -323,6 +329,8 @@ function reducer(state, action) {
       statusFilterActive: state.statusFilterActive,
       conditionsFilterActive: state.conditionsFilterActive,        
       checkAll: state.checkAll,
+      valueSearch: state.valueSearch,
+      checkedSearch: state.checkedSearch,
     }; 
   } else if (action.type === 'CHANGE_ACTIVE_PAGE') { 
     return {
@@ -337,7 +345,9 @@ function reducer(state, action) {
       checkAll: false,
       usersFilterActive: state.usersFilterActive,
       statusFilterActive: state.statusFilterActive,
-      conditionsFilterActive: state.conditionsFilterActive,          
+      conditionsFilterActive: state.conditionsFilterActive,
+      valueSearch: state.valueSearch,
+      checkedSearch: state.checkedSearch,
     }; 
     
   } else if (action.type === 'CHANGE_USER_FILTER') {
@@ -349,11 +359,13 @@ function reducer(state, action) {
         usersList: state.usersList,
         conditionsList: state.conditionsList,
         brandsList: state.brandsList,
-      locationsList: state.locationsList,
+        locationsList: state.locationsList,
         productsSelected: [],
         checkAll: false,
         statusFilterActive: state.statusFilterActive,
         conditionsFilterActive: state.conditionsFilterActive,
+        valueSearch: state.valueSearch,
+        checkedSearch: state.checkedSearch,
     }
 
   } else if (action.type === 'CHANGE_STATUS_FILTER') {
@@ -370,6 +382,8 @@ function reducer(state, action) {
         locationsList: state.locationsList,
         productsSelected: [],
         checkAll: false,
+        valueSearch: state.valueSearch,
+        checkedSearch: state.checkedSearch,
     }
   } else if (action.type === 'CHANGE_CONDITION_FILTER') {
     return {
@@ -385,6 +399,8 @@ function reducer(state, action) {
         locationsList: state.locationsList,
         productsSelected: [],
         checkAll: false,
+        valueSearch: state.valueSearch,
+        checkedSearch: state.checkedSearch,
     }
 
   } else if (action.type === 'UNCHECK_ALL'){
@@ -401,7 +417,8 @@ function reducer(state, action) {
       usersFilterActive: state.usersFilterActive,
       statusFilterActive: state.statusFilterActive,
       conditionsFilterActive: state.conditionsFilterActive,
-  
+      valueSearch: state.valueSearch,
+      checkedSearch: state.checkedSearch,
     }
   } else if (action.type === 'CHECK_ALL'){
     
@@ -417,7 +434,46 @@ function reducer(state, action) {
       locationsList: state.locationsList,
       usersFilterActive: state.usersFilterActive,
       statusFilterActive: state.statusFilterActive,
-      conditionsFilterActive: state.conditionsFilterActive,        
+      conditionsFilterActive: state.conditionsFilterActive,
+      valueSearch: state.valueSearch,        
+      checkedSearch: state.checkedSearch,
+    }
+  } else if (action.type === 'CHANGE_VALUE_SEARCH'){
+    
+    return {    
+      productsSelected: [],
+      checkAll: false,
+      activePage: state.activePage,
+      productsListSorted: state.productsListSorted,
+      productsByPage: state.productsByPage,
+      usersList: state.usersList,
+      conditionsList: state.conditionsList,
+      brandsList: state.brandsList,
+      locationsList: state.locationsList,
+      usersFilterActive: state.usersFilterActive,
+      statusFilterActive: state.statusFilterActive,
+      conditionsFilterActive: state.conditionsFilterActive,
+      valueSearch: action.valueSearch,        
+      checkedSearch: state.checkedSearch,
+    }
+    
+  } else if (action.type === 'CHANGE_CHECKED_SEARCH'){
+    
+    return {    
+      productsSelected: [],
+      checkAll: false,
+      activePage: state.activePage,
+      productsListSorted: state.productsListSorted,
+      productsByPage: state.productsByPage,
+      usersList: state.usersList,
+      conditionsList: state.conditionsList,
+      brandsList: state.brandsList,
+      locationsList: state.locationsList,
+      usersFilterActive: state.usersFilterActive,
+      statusFilterActive: state.statusFilterActive,
+      conditionsFilterActive: state.conditionsFilterActive,
+      valueSearch: state.valueSearch,        
+      checkedSearch: action.checkedSearch,
     }
 
 
@@ -536,12 +592,67 @@ class Product extends Component {
 
 
 class ProductsSearched extends Component {
-  render() {
-    return (
+
+  handleClick = () => {
+    
+    store.dispatch({
+      type: 'CHANGE_CHECKED_SEARCH',
+      checkedSearch: true,      
+    })
+  }
+
+  handleSearchChange = (e, value) => {
+    
+    console.log(e);
+    store.dispatch({
+      type: 'CHANGE_VALUE_SEARCH',
+      valueSearch: e.target.value,
+    });
+    
+  }
+
+  deleteSearchWord = () => {
+    store.dispatch({
+      type: 'CHANGE_VALUE_SEARCH',
+      valueSearch: '',
+    });
+    store.dispatch({
+      type: 'CHANGE_CHECKED_SEARCH',
+      checkedSearch: false,      
+    })
+  }
+
+  render() {   
+
+    if (this.props.checkedSearch === true){
+      return (
       <div>
-        <h1>Products Searched</h1>
+        <Input 
+            icon = {{ name: 'delete', link: true, onClick: this.deleteSearchWord}}
+            placeholder='Search SKU, Title, MPN...' 
+            onChange={this.handleSearchChange}
+            value={this.props.valueSearch}
+            
+            
+          />
+          <Button icon='search' onEnter={this.handleClick} onClick={this.handleClick} />
       </div>
-    )
+      )
+    } else {
+        return (
+        <div>
+              <Input 
+            placeholder='Search SKU, Title, MPN...' 
+            onChange={this.handleSearchChange}
+            value={this.props.valueSearch}
+            
+            />
+            <Button icon='search' onEnter={this.handleClick} onClick={this.handleClick} />
+          
+        </div>
+        )
+    }
+    
   }
 }
 
@@ -549,13 +660,13 @@ class ActionProductsSelected extends Component {
   render(){
     const options = [
       { key: 'online', icon: 'globe', text: 'Switch to Online', value: 'online' },
-      { key: 'offline', icon: 'level down', text: 'Switch to Offline', value: 'offline' },
+      { key: 'offline', icon: 'level down', text: 'Bring to Offline', value: 'offline' },
       { key: 'delete', icon: 'delete', text: 'Delete', value: 'delete' },
     ]
     return (
       <Button.Group color='teal'>
     <Button disabled = {this.props.productsSelected.length < 1 ? true : false}>
-      Action to {this.props.productsSelected.length} selected products</Button>
+      Action on {this.props.productsSelected.length} selected</Button>
     <Dropdown disabled = {this.props.productsSelected.length < 1 ? true : false} 
     options={options} floating button className='icon' />
   </Button.Group>
@@ -743,9 +854,7 @@ class ProductsTableList extends Component {
   
   render(){
     
-    console.log("PPRPREPRE:" + this.props.activePage);
-    console.log("PRODUCT GROUPED:" + this.props.productsListGrouped );
-    
+        
     if (this.props.productsListGrouped.length > 0){
 
     return (
@@ -1036,16 +1145,6 @@ class ProductsDashboardFilter extends Component {
   }
 }
 
-class ProductsDashboardResultsPerPage extends Component {
-  
-  render() {
-    return (
-      <div>
-        <h1>Product Dashboard Results Per Page</h1>
-      </div>
-    )
-  }
-} 
 
 class ProductsDashboardPagination extends Component {
 
@@ -1093,9 +1192,18 @@ class ProductsDashboard extends Component {
     
     return (
       <div>
+        <Grid>
+        <Grid.Column width={6}>
         <ActionProductsSelected productsSelected = {this.props.productsSelected} /> 
-        <ProductsSearched />
-
+        </Grid.Column>
+        <Grid.Column width={10}>
+        <ProductsSearched 
+          productsListSorted = {this.props.productsListSorted}
+          valueSearch = {this.props.valueSearch} 
+          checkedSearch = {this.props.checkedSearch} />
+        </Grid.Column>
+        </Grid>
+        
         <ProductsDashboardFilter 
           productsByPage = {this.props.productsByPage} 
           productsListGrouped = {this.props.productsListGrouped} 
@@ -1125,7 +1233,7 @@ class ProductsDashboard extends Component {
           productsListSorted = {this.props.productsListSorted}          
         /> 
         
-        <ProductsDashboardResultsPerPage />
+        
       </div>
     )
   }
@@ -1144,6 +1252,19 @@ class App extends Component {
     const usersFilterActive = state.usersFilterActive;
     const statusFilterActive = state.statusFilterActive;
     const conditionsFilterActive = state.conditionsFilterActive;
+    const valueSearch = state.valueSearch;
+    const checkedSearch = state.checkedSearch;
+
+
+    function checkSearchFilter(list, valueSearch){
+      if (checkedSearch === true){
+        return list.filter(item => item.title.toLowerCase().includes(valueSearch.toLowerCase()) || 
+        item.partNumbers[0].toLowerCase().includes(valueSearch.toLowerCase()) ||
+        item.sku.toLowerCase().includes(valueSearch.toLowerCase()))
+      } else {
+        return list;
+      }
+    }
 
     function checkUsersFilterActive(list, usersFilterActive){
       if (usersFilterActive !== 'ALL'){
@@ -1172,13 +1293,22 @@ class App extends Component {
     const productsListSorted = state.productsListSorted;
     
     const productsListFiltered = 
+        
+        
+        checkConditionsFilterActive(checkStatusFilterActive(checkUsersFilterActive(checkSearchFilter(productsListSorted, valueSearch),usersFilterActive),
+        statusFilterActive),conditionsFilterActive)
+
+        /*
         checkConditionsFilterActive(
         checkStatusFilterActive(
-        checkUsersFilterActive(productsListSorted, 
+        checkUsersFilterActive(
+        checkSearchFilter(
+        productsListSorted) 
         usersFilterActive), 
         statusFilterActive), 
-        conditionsFilterActive)   
-
+        conditionsFilterActive),
+        valueSearch)
+        */
     console.log("PRODUCT FILTERED: " + productsListFiltered); 
     
     const productsByPage = state.productsByPage;  
@@ -1197,7 +1327,8 @@ class App extends Component {
       <div>
         {console.log(activePage)}
         <ProductsDashboard 
-          productsListGrouped = {productsListFiltered.chunk(productsByPage)} 
+          productsListGrouped = {productsListFiltered.chunk(productsByPage)}
+
           productsByPage = {productsByPage}
           activePage = {activePage}
           productsSelected = {productsSelected}
@@ -1209,6 +1340,8 @@ class App extends Component {
           checkAll = {checkAll}
           brandsList = {brandsList}
           locationsList = {locationsList}
+          valueSearch = {valueSearch}
+          checkedSearch = {checkedSearch}
         />
       </div>
     );
