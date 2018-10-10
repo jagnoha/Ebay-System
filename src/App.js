@@ -5,7 +5,15 @@ import './App.css';
 import './helpers.js';
 import { Label, Input, Search, Form, Radio, Pagination, Container, Divider, Segment, Grid, Table, Modal, 
   Dropdown, Image, Item, Checkbox, Button, Icon, Message, Header } from 'semantic-ui-react'
-import _ from 'lodash'
+import _ from 'lodash';
+import Lightbox from 'react-image-lightbox';
+import 'react-image-lightbox/style.css';
+//import DragSortableList from 'react-drag-sortable'
+//import ReactDragList from 'react-drag-list';
+import {SortableContainer, SortableElement, arrayMove} from 'react-sortable-hoc';
+//import ImageUploader from 'react-images-upload';
+//import Dropzone from 'react-dropzone'
+//import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 
 
@@ -129,9 +137,9 @@ let productsServer = [
     otherCondition: '',
     price: '0.00',
     bestOffer: false,
-    freeShipping: true,
-    domestic: 'USPS First Class',
-    international: 'GSP',
+    freeShipping: false,
+    domestic: '1',
+    international: '0',
     length: '8',
     width: '8',
     depth: '8',
@@ -183,8 +191,8 @@ let productsServer = [
     price: '25.00',
     bestOffer: false,
     freeShipping: true,
-    domestic: 'USPS First Class',
-    international: 'GSP',
+    domestic: '1',
+    international: '0',
     length: '8',
     width: '8',
     depth: '8',
@@ -209,7 +217,13 @@ let productsServer = [
     ],
     pictures: [
       'http://zeemplex.com/marketplace/docroot/sites/default/files/2018-09/1538064520510294929285.jpg',
-      'http://zeemplex.com/marketplace/docroot/sites/default/files/2018-09/1538064693347-467134214.jpg'
+      'http://zeemplex.com/marketplace/docroot/sites/default/files/2018-09/1538064693347-467134214.jpg',
+      'http://zeemplex.com/marketplace/docroot/sites/default/files/2018-09/1538064520510294929285.jpg',
+      'http://zeemplex.com/marketplace/docroot/sites/default/files/2018-09/1538064693347-467134214.jpg',
+      'http://zeemplex.com/marketplace/docroot/sites/default/files/2018-09/1538064520510294929285.jpg',
+      'http://zeemplex.com/marketplace/docroot/sites/default/files/2018-09/1538064693347-467134214.jpg',
+      'http://zeemplex.com/marketplace/docroot/sites/default/files/2018-09/1538064520510294929285.jpg',
+      'http://zeemplex.com/marketplace/docroot/sites/default/files/2018-09/1538064693347-467134214.jpg',
     ],
     location: [],
     quantity: '1',
@@ -217,10 +231,10 @@ let productsServer = [
     conditionDescription: 'Open Box',
     otherCondition: '',
     price: '0.00',
-    bestOffer: false,
+    bestOffer: true,
     freeShipping: true,
-    domestic: 'USPS First Class',
-    international: 'GSP',
+    domestic: '2',
+    international: '0',
     length: '8',
     width: '8',
     depth: '8',
@@ -255,8 +269,8 @@ let productsServer = [
     price: '0.00',
     bestOffer: false,
     freeShipping: true,
-    domestic: 'USPS First Class',
-    international: 'GSP',
+    domestic: '3',
+    international: '0',
     length: '8',
     width: '8',
     depth: '8',
@@ -540,31 +554,185 @@ const store = createStore(reducer, initialState);
 
 
 
+class ImagesLightBox extends Component {
+  
+  state = {
+    photoIndex: this.props.photoIndex,
+    isOpen: false,
+  }
+  
+  render() {
+    const { photoIndex, isOpen } = this.state;
+    const images = this.props.pictures;
+
+    return (
+      <span>
+        
+        
+        <Image size='small' src = {this.props.pictures[photoIndex]} onClick={() => this.setState({ isOpen: true })}
+        
+        
+        
+        
+        >
+        
+      </Image>
+      
+        
+        {isOpen && (
+          <Lightbox
+            mainSrc={images[photoIndex]}
+            nextSrc={images[(photoIndex + 1) % images.length]}
+            prevSrc={images[(photoIndex + images.length - 1) % images.length]}
+            onCloseRequest={() => this.setState({ isOpen: false })}
+            onMovePrevRequest={() =>
+              this.setState({
+                photoIndex: (photoIndex + images.length - 1) % images.length,
+              })
+            }
+            onMoveNextRequest={() =>
+              this.setState({
+                photoIndex: (photoIndex + 1) % images.length,
+              })
+            }
+          />
+        )}
+      </span>
+    );
+  }
+}
+
+
+const SortableItem = SortableElement(({value, index}) =>
+      <Image size='small' src = {value} />
+    );
+
+const SortableList = SortableContainer(({items}) => {
+      return (
+        <ul>
+          {items.map((value, index) => (
+            <SortableItem key={`item-${index}`} index={index} value={value} />
+          ))}
+        </ul>
+      );
+    });
+
+
+
+class DroppablePictures extends Component {
+  
+  render(){
+    const listPictures = this.props.picturesList.map((item, index) => {
+      
+      return (
+        <ImagesLightBox pictures = {this.props.picturesList} photoIndex = {index} />
+      )
+    }
+    );
+    return(
+      <span>{listPictures}</span>
+    )
+  }
+}
+
+const options = [
+  { key: 'English', text: 'English', value: 'English' },
+  { key: 'French', text: 'French', value: 'French' },
+  { key: 'Spanish', text: 'Spanish', value: 'Spanish' },
+  { key: 'German', text: 'German', value: 'German' },
+  { key: 'Chinese', text: 'Chinese', value: 'Chinese' },
+]
+
+
+class LocationsField extends Component {
+  state = { options }
+
+  handleAddition = (e, { value }) => {
+    this.setState({
+      options: [{ text: value, value }, ...this.state.options],
+    })
+  }
+
+  handleChange = (e, { value }) => this.setState({ currentValues: value })
+
+  render() {
+    const { currentValues } = this.state
+
+    return (
+      <span>
+      <Input multiple list='languages' placeholder='Choose language...' />
+      <datalist id='languages'>
+      {
+        options.map(item => <option value={item.value} />)
+      }
+      </datalist>
+      </span>
+      
+    )
+  }
+}
+
 class ProductForm extends Component {
+
 
   
 
   render(){
     
+    
+
+    
+    
+    /*
+    const listPictures = this.props.item.pictures.map((item, index) => {
+      
+        return (
+          <ImagesLightBox pictures = {this.props.item.pictures} photoIndex = {index} />
+        )
+      }
+    );*/
+
+ 
+
+
+    
+
+
     return (
       <div>
         <Form >
-          
+        
+        <Segment>
+        
+         
+        <Image.Group>
+        
+    
+    
+        <DroppablePictures picturesList = {this.props.item.pictures} />
+        
+
+        
+        
+        </Image.Group>
+        </Segment>
+        
+        
         <Form.Group inline>
           <Form.Input width={14} fluid label='Product Title' required placeholder='Product Title' value={this.props.item.title} />
-          <Form.Checkbox width={2} fluid label='Auto' toggle />
+          <Form.Checkbox width={2} label='Auto' toggle />
         </Form.Group>
         <Form.Group inline widths='equal'>
           <Form.Input  fluid label='Available' type="number" value={this.props.item.quantity}/>
           <Form.Input  fluid label='Price' type="number" step='0.1' value={this.props.item.price} />
-          <Form.Checkbox fluid label='Best Offer' toggle />
+          <Form.Checkbox label='Best Offer' checked={this.props.item.bestOffer} toggle />
         </Form.Group>
         
         <Segment>
         <Form.Group inline>
           
           <Form.Input label="Compatibility from EbayID" icon={<Icon name='sync alternate' inverted circular link />} placeholder='EbayID' />
-          <Form.Checkbox fluid label='Auto' toggle />
+          <Form.Checkbox label='Auto' toggle />
           <Label as='a' color='yellow'>
           <Icon name='warning' size='large' />
             Product without Fitments
@@ -578,10 +746,12 @@ class ProductForm extends Component {
         <Label attached='top left' ><Icon name='shipping' /> Shipping Information</Label>
           
           <Form.Group inline widths='equal'>
-            <Form.Dropdown fluid label='Domestic Shipping' placeholder='Domestic Shipping' defaultValue='1' fluid selection options={[{text:'USPS First Class', value: '1'}]} />
+            <Form.Dropdown fluid label='Domestic Shipping' placeholder='Domestic Shipping' 
+              defaultValue={this.props.item.domestic} fluid selection options={window.helpers.shippingOptions} />
           
-            <Form.Checkbox fluid label='Free Shipping' checked={true} toggle />
-            <Form.Dropdown fluid label='International Shipping' placeholder='International Shipping' defaultValue='1' fluid selection options={[{text:'GSP', value: '1'}]} />
+            <Form.Checkbox label='Free Shipping' checked={this.props.item.freeShipping} toggle />
+            <Form.Dropdown fluid label='International Shipping' placeholder='International Shipping' defaultValue={this.props.item.international} 
+              fluid selection options={window.helpers.internationalShippingOptions} />
           </Form.Group>
         </Segment>
 
@@ -590,9 +760,17 @@ class ProductForm extends Component {
         <Label attached='top left' ><Icon name='balance scale' /> Physical Information</Label>
           
           <Form.Group inline widths='equal'>
-
+            <Form.Input  fluid label='Length' type="number" value={this.props.item.length}/>
+            <Form.Input  fluid label='Width' type="number" value={this.props.item.width}/>
+            <Form.Input  fluid label='Depth' type="number" value={this.props.item.depth}/>
+            
+            <Form.Input  fluid label='Weight' type="number" value={this.props.item.weight}/>
+            <Form.Dropdown fluid label='Weight Unit' upward placeholder='Weight Unit' defaultValue={this.props.item.weightUnit} 
+              fluid selection options={window.helpers.weightUnit} />
+            
           </Form.Group>
         </Segment>
+        <LocationsField />
         
           
         

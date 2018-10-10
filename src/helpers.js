@@ -55,6 +55,27 @@ window.helpers = (function () {
         }
     }
 
+    const shippingOptions = [
+        {text:'USPS First Class',value: '0'},
+        {text:'USPS Priority Mail',value: '1'},
+        {text:'UPS Ground',value: '2'},
+        {text:'Pallet',value: '3'},
+        {text:'Local Pickup',value: '4'},    
+    ]
+
+    const internationalShippingOptions = [
+        {text:'GSP',value: '0'},
+        {text:'No International',value: '1'},
+    ]
+
+    const weightUnit = [
+        {value:'oz', text: 'oz'},
+        {value:'lb', text: 'lb'},
+        {value:'gr', text: 'gr'},
+        {value:'Kg', text: 'Kg'},
+    ]
+
+
     return {
         getConditionFromId,
         getNameFromId,
@@ -64,6 +85,9 @@ window.helpers = (function () {
         isProductChecked,
         getBrandFromId,
         getLocationFromId,
+        shippingOptions,
+        internationalShippingOptions,
+        weightUnit,
     }
 
 }())
