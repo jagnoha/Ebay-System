@@ -20,24 +20,40 @@ import _ from 'lodash'
 
 let users = [
   {
+    id: '0',
+    username: 'admin',
+    password: 'MAGIC3232!',
+    group: '0',
+  },
+  {
     id: '1',
     username: 'orr',
+    password: 'MAGIC3232!',
+    group: '1'
   },
   {
     id: '2',
-    username: 'dekel'
+    username: 'dekel',
+    password: 'dekel',
+    group: '1',
   },
   {
     id: '3',
-    username: 'jagnoha'
+    username: 'jagnoha',
+    password: 'jagnoha',
+    group: '2',
   },
   {
     id: '4',
-    username: 'robert'
+    username: 'robert',
+    password: 'robert',
+    group: '2',
   },
   {
     id: '5',
-    username: 'jordan'
+    username: 'jordan',
+    password: 'jordan',
+    group: '2',
   }
 ];
 
@@ -271,6 +287,7 @@ const initialState = {
   checkAll: false,
   valueSearch: '',
   checkedSearch: false,
+  userActive: null,
 }
 
 function reducer(state, action) {
@@ -291,6 +308,7 @@ function reducer(state, action) {
       checkAll: false,
       valueSearch: state.valueSearch,
       checkedSearch: state.checkedSearch,
+      userActive: state.userActive,
     };
 
   } else if (action.type === 'ADD_PRODUCT_SELECTED'){
@@ -312,6 +330,7 @@ function reducer(state, action) {
       checkAll: state.checkAll,
       valueSearch: state.valueSearch,
       checkedSearch: state.checkedSearch,
+      userActive: state.userActive,
     }
 
   } else if (action.type === 'DELETE_PRODUCT_SELECTED'){
@@ -331,6 +350,7 @@ function reducer(state, action) {
       checkAll: state.checkAll,
       valueSearch: state.valueSearch,
       checkedSearch: state.checkedSearch,
+      userActive: state.userActive,
     }; 
   } else if (action.type === 'CHANGE_ACTIVE_PAGE') { 
     return {
@@ -348,6 +368,7 @@ function reducer(state, action) {
       conditionsFilterActive: state.conditionsFilterActive,
       valueSearch: state.valueSearch,
       checkedSearch: state.checkedSearch,
+      userActive: state.userActive,
     }; 
     
   } else if (action.type === 'CHANGE_USER_FILTER') {
@@ -366,6 +387,7 @@ function reducer(state, action) {
         conditionsFilterActive: state.conditionsFilterActive,
         valueSearch: state.valueSearch,
         checkedSearch: state.checkedSearch,
+        userActive: state.userActive,
     }
 
   } else if (action.type === 'CHANGE_STATUS_FILTER') {
@@ -384,6 +406,7 @@ function reducer(state, action) {
         checkAll: false,
         valueSearch: state.valueSearch,
         checkedSearch: state.checkedSearch,
+        userActive: state.userActive,
     }
   } else if (action.type === 'CHANGE_CONDITION_FILTER') {
     return {
@@ -401,6 +424,7 @@ function reducer(state, action) {
         checkAll: false,
         valueSearch: state.valueSearch,
         checkedSearch: state.checkedSearch,
+        userActive: state.userActive,
     }
 
   } else if (action.type === 'UNCHECK_ALL'){
@@ -419,6 +443,7 @@ function reducer(state, action) {
       conditionsFilterActive: state.conditionsFilterActive,
       valueSearch: state.valueSearch,
       checkedSearch: state.checkedSearch,
+      userActive: state.userActive,
     }
   } else if (action.type === 'CHECK_ALL'){
     
@@ -437,12 +462,14 @@ function reducer(state, action) {
       conditionsFilterActive: state.conditionsFilterActive,
       valueSearch: state.valueSearch,        
       checkedSearch: state.checkedSearch,
+      userActive: state.userActive,
     }
   } else if (action.type === 'CHANGE_VALUE_SEARCH'){
     
-    return {    
+    return {
       productsSelected: [],
       checkAll: false,
+      valueSearch: action.valueSearch,
       activePage: state.activePage,
       productsListSorted: state.productsListSorted,
       productsByPage: state.productsByPage,
@@ -452,9 +479,9 @@ function reducer(state, action) {
       locationsList: state.locationsList,
       usersFilterActive: state.usersFilterActive,
       statusFilterActive: state.statusFilterActive,
-      conditionsFilterActive: state.conditionsFilterActive,
-      valueSearch: action.valueSearch,        
+      conditionsFilterActive: state.conditionsFilterActive,             
       checkedSearch: state.checkedSearch,
+      userActive: state.userActive,
     }
     
   } else if (action.type === 'CHANGE_CHECKED_SEARCH'){
@@ -474,6 +501,27 @@ function reducer(state, action) {
       conditionsFilterActive: state.conditionsFilterActive,
       valueSearch: state.valueSearch,        
       checkedSearch: action.checkedSearch,
+      userActive: state.userActive,
+    }
+
+  } else if (action.type === 'CHANGE_ACTIVE_USER'){
+    
+    return {    
+      productsSelected: [],
+      checkAll: false,
+      activePage: 1,
+      productsListSorted: state.productsListSorted,
+      productsByPage: 3,
+      usersList: state.usersList,
+      conditionsList: state.conditionsList,
+      brandsList: state.brandsList,
+      locationsList: state.locationsList,
+      usersFilterActive: 'ALL',
+      statusFilterActive: 'ALL',
+      conditionsFilterActive: 'ALL',
+      valueSearch: '',        
+      checkedSearch: false,
+      userActive: action.userActive,
     }
 
 
@@ -497,27 +545,61 @@ class ProductForm extends Component {
   
 
   render(){
+    
     return (
       <div>
         <Form >
-          <h1>DKLKFDLSFKSDF</h1>
-          <h1>DKLKFDLSFKSDF</h1>
-          <h1>DKLKFDLSFKSDF</h1>
-          <h1>DKLKFDLSFKSDF</h1>
-          <h1>DKLKFDLSFKSDF</h1>
-          <h1>DKLKFDLSFKSDF</h1>
-          <h1>DKLKFDLSFKSDF</h1>
-          <h1>DKLKFDLSFKSDF</h1>
-          <h1>DKLKFDLSFKSDF</h1>
-          <h1>DKLKFDLSFKSDF</h1>
-          <h1>DKLKFDLSFKSDF</h1>
-          <h1>DKLKFDLSFKSDF</h1>
-          <h1>DKLKFDLSFKSDF</h1>
-          <h1>DKLKFDLSFKSDF</h1>
-          <h1>DKLKFDLSFKSDF</h1>
-          <h1>DKLKFDLSFKSDF</h1>
-          <h1>DKLKFDLSFKSDF</h1>
+          
+        <Form.Group inline>
+          <Form.Input width={14} fluid label='Product Title' required placeholder='Product Title' value={this.props.item.title} />
+          <Form.Checkbox width={2} fluid label='Auto' toggle />
+        </Form.Group>
+        <Form.Group inline widths='equal'>
+          <Form.Input  fluid label='Available' type="number" value={this.props.item.quantity}/>
+          <Form.Input  fluid label='Price' type="number" step='0.1' value={this.props.item.price} />
+          <Form.Checkbox fluid label='Best Offer' toggle />
+        </Form.Group>
+        
+        <Segment>
+        <Form.Group inline>
+          
+          <Form.Input label="Compatibility from EbayID" icon={<Icon name='sync alternate' inverted circular link />} placeholder='EbayID' />
+          <Form.Checkbox fluid label='Auto' toggle />
+          <Label as='a' color='yellow'>
+          <Icon name='warning' size='large' />
+            Product without Fitments
+          </Label>
+          
+        </Form.Group>
+        </Segment>
+        <Form.TextArea label="Description" value = {this.props.item.description} />
+        <Segment>
+        
+        <Label attached='top left' ><Icon name='shipping' /> Shipping Information</Label>
+          
+          <Form.Group inline widths='equal'>
+            <Form.Dropdown fluid label='Domestic Shipping' placeholder='Domestic Shipping' defaultValue='1' fluid selection options={[{text:'USPS First Class', value: '1'}]} />
+          
+            <Form.Checkbox fluid label='Free Shipping' checked={true} toggle />
+            <Form.Dropdown fluid label='International Shipping' placeholder='International Shipping' defaultValue='1' fluid selection options={[{text:'GSP', value: '1'}]} />
+          </Form.Group>
+        </Segment>
 
+        <Segment>
+        
+        <Label attached='top left' ><Icon name='balance scale' /> Physical Information</Label>
+          
+          <Form.Group inline widths='equal'>
+
+          </Form.Group>
+        </Segment>
+        
+          
+        
+        
+        
+            
+          
         </Form>
       </div>
     )
@@ -767,6 +849,7 @@ class ProductsSearched extends Component {
 }
 
 class ActionProductsSelected extends Component {
+  
   render(){
     const options = [
       { key: 'online', icon: 'globe', text: 'Switch to Online', value: 'online' },
@@ -787,16 +870,13 @@ class ActionProductsSelected extends Component {
 
 class SelectAllItems extends Component {
   
-  /*state = {
-    checked: this.props.checkAll,
-  }*/
-
+  
   
   toggle = (e,data) => {
     console.log(data.checked);
     //this.setState({ checked: !this.state.checked})
   
-    if (data.checked === false){
+    if (data.checked === false || this.props.productsListGrouped.length < 1){
       store.dispatch({
         type: 'UNCHECK_ALL',
       })  
@@ -808,10 +888,7 @@ class SelectAllItems extends Component {
     }  
   }
   
-  /*store.dispatch({
-    type: 'UNCHECK_ALL',
-    id: 
-  });*/
+  
 
   render(){
     //console.log("AQUI ESTA LA INFORMACION BUENA: " + this.props.productsListGrouped[this.props.activePage-1].map(item => item.uuid));
@@ -1348,6 +1425,8 @@ class App extends Component {
   componentDidMount(){
     store.subscribe(() => this.forceUpdate());
   }
+
+  
   
   render() {
     const state = store.getState();
@@ -1410,11 +1489,15 @@ class App extends Component {
     const conditionsList = state.conditionsList;
     const brandsList = state.brandsList;
     const locationsList = state.locationsList;
+    const userActive = state.userActive;
     console.log("EL ARRAY ORDENADO: " + productsListSorted);
     
     const checkAll = state.checkAll;
     
     console.log("Active Page in App: " + activePage);
+    
+    
+    
     return (
       <div>
         {console.log(activePage)}
