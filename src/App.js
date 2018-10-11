@@ -7,6 +7,7 @@ import { Label, Input, Search, Form, Radio, Pagination, Container, Divider, Segm
   Dropdown, Image, Item, Checkbox, Button, Icon, Message, Header } from 'semantic-ui-react'
 import _ from 'lodash';
 import Lightbox from 'react-image-lightbox';
+
 import 'react-image-lightbox/style.css';
 //import DragSortableList from 'react-drag-sortable'
 //import ReactDragList from 'react-drag-list';
@@ -15,6 +16,7 @@ import {SortableContainer, SortableElement, arrayMove} from 'react-sortable-hoc'
 //import Dropzone from 'react-dropzone'
 //import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
+const uuid = require('uuid/v4');
 
 
 /*Object.defineProperty(Array.prototype, 'chunk', {
@@ -517,6 +519,29 @@ function reducer(state, action) {
       checkedSearch: action.checkedSearch,
       userActive: state.userActive,
     }
+  
+  } else if (action.type === 'ADD_NEW_LOCATION'){
+    
+      const newLocationsList = state.locationsList.concat({id: uuid(), value: action.newLocation});
+
+    return {    
+      productsSelected: [],
+      checkAll: false,
+      activePage: state.activePage,
+      productsListSorted: state.productsListSorted,
+      productsByPage: state.productsByPage,
+      usersList: state.usersList,
+      conditionsList: state.conditionsList,
+      brandsList: state.brandsList,
+      locationsList: newLocationsList,
+      usersFilterActive: state.usersFilterActive,
+      statusFilterActive: state.statusFilterActive,
+      conditionsFilterActive: state.conditionsFilterActive,
+      valueSearch: state.valueSearch,        
+      checkedSearch: state.checkedSearch,
+      userActive: state.userActive,
+
+    }
 
   } else if (action.type === 'CHANGE_ACTIVE_USER'){
     
@@ -625,7 +650,7 @@ class DroppablePictures extends Component {
     const listPictures = this.props.picturesList.map((item, index) => {
       
       return (
-        <ImagesLightBox pictures = {this.props.picturesList} photoIndex = {index} />
+        <ImagesLightBox key={index} pictures = {this.props.picturesList} photoIndex = {index} />
       )
     }
     );
@@ -645,28 +670,69 @@ const options = [
 
 
 class LocationsField extends Component {
-  state = { options }
+  state = { 
+    options: this.props.locationsList.map(item => {
+      return {key: item.id, text: item.value, value: item.id}
+    }),
+    currentValues: this.props.currentLocations.map(item => {
+      return item;
+    })
+  }
+
+  
 
   handleAddition = (e, { value }) => {
+    console.log("Mi Valor: " + value);
+    console.log(this.props.locationsList);
+    console.log(this.props.locationsList.filter(item => item.value.toLowerCase() === value.toLowerCase()).length);
+    
+    if (this.props.locationsList.filter(item => item.value.toLowerCase() === value.toLowerCase()).length === 0){
+
+    //console.log(window.helpers.getLocationFromId(this.props.locationsList, value.text));
+    //if (this.state.options.filter(item => item.value !== window.helpers.getLocationFromId(this.props.locationsList, item.value)).length === 0){
     this.setState({
-      options: [{ text: value, value }, ...this.state.options],
-    })
+      options: [{ text: value.toUpperCase(), value }, ...this.state.options],
+    });
+    store.dispatch(
+      {
+        type: 'ADD_NEW_LOCATION',
+        newLocation: value.toUpperCase(),
+      }
+    )
+    }
   }
 
   handleChange = (e, { value }) => this.setState({ currentValues: value })
 
   render() {
     const { currentValues } = this.state
-
-    return (
-      <span>
-      <Input multiple list='languages' placeholder='Choose language...' />
-      <datalist id='languages'>
-      {
-        options.map(item => <option value={item.value} />)
+    const renderLabel = label => ({
+        color: 'black',
+        content: label.text,
+        icon: 'warehouse',
       }
-      </datalist>
-      </span>
+    )
+    //console.log(currentValues);
+    //console.log(this.props.currentLocations);
+    return (
+      <div>
+      <Dropdown
+        options={this.state.options}
+        closeOnChange
+        placeholder='Locations'
+        renderLabel={renderLabel}
+        minCharacters = {2}
+        search
+        selection
+        fluid
+        multiple
+        upward
+        allowAdditions
+        value={currentValues}
+        onAddItem={this.handleAddition}
+        onChange={this.handleChange}
+      />
+      </div>
       
     )
   }
@@ -770,8 +836,12 @@ class ProductForm extends Component {
             
           </Form.Group>
         </Segment>
-        <LocationsField />
-        
+        <Segment>
+            <Label attached='top left' ><Icon name='warehouse' /> Locations</Label>
+            
+            <LocationsField locationsList={this.props.locationsList} currentLocations = {this.props.item.location} />
+          
+        </Segment>
           
         
         
@@ -925,7 +995,7 @@ class Product extends Component {
                     
                   </Modal.Header>
                   <Modal.Content scrolling>
-                    <ProductForm key={this.props.item.uuid} id={this.props.item.uuid} item={this.props.item} />
+                    <ProductForm key={this.props.item.uuid} id={this.props.item.uuid} item={this.props.item} locationsList={this.props.locationsList} />
                   </Modal.Content>
                   <Modal.Actions>
                   <Button color='green'>
@@ -1673,6 +1743,7 @@ class App extends Component {
     const checkAll = state.checkAll;
     
     console.log("Active Page in App: " + activePage);
+    console.log(locationsList);
     
     
     
