@@ -75,6 +75,36 @@ window.helpers = (function () {
         {value:'Kg', text: 'Kg'},
     ]
 
+    const conditionOptions = [
+        {text: 'New', value: '0'},
+        {text: 'New (Other)', value: '1'},
+        {text: 'Used', value: '2'},
+    ]
+
+    const conditionDescriptionOptions = [
+        {value:'Box Damage', text: 'Box Damage'},
+        {value:'Bag Damage', text: 'Bag Damage'},
+        {value:'Open Box', text: 'Open Box'},
+        {value:'Out of Box', text: 'Out of Box'},
+        {value:'Out of Bag', text: 'Out of Bag'},
+        {value:'NOS', text: 'NOS'},
+        {value:'Rebuilt / Remanufactured', text: 'Rebuilt / Remanufactured'},
+        {value:'Missing Parts', text: 'Missing Parts'},
+        {value:'Some Dent', text: 'Some Dent'},
+        {value:'Some Scratches', text: 'Some Scratches'},
+        {value:'As Pictured', text: 'As Pictured'},
+        {value:'Dirty', text: 'Dirty'},
+        {value:'Small Cracks', text: 'Small Cracks'},
+        {value:'Vintage', text: 'Vintage'},
+        {value:'Unknown Condition', text: 'Unknown Condition'},
+        {value:'New Take Off', text: 'New Take Off'},
+        {value:'New, Open Bag/Box for Taking Pictures', text: 'New, Open Bag/Box for Taking Pictures'},
+
+
+
+       
+    ]
+
 
     return {
         getConditionFromId,
@@ -88,6 +118,8 @@ window.helpers = (function () {
         shippingOptions,
         internationalShippingOptions,
         weightUnit,
+        conditionOptions,
+        conditionDescriptionOptions,
     }
 
 }())

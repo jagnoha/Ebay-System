@@ -9,9 +9,10 @@ import _ from 'lodash';
 import Lightbox from 'react-image-lightbox';
 
 import 'react-image-lightbox/style.css';
-//import DragSortableList from 'react-drag-sortable'
+import DragSortableList from 'react-drag-sortable'
 //import ReactDragList from 'react-drag-list';
-import {SortableContainer, SortableElement, arrayMove} from 'react-sortable-hoc';
+//import {SortableContainer, SortableElement, arrayMove} from 'react-sortable-hoc';
+
 //import ImageUploader from 'react-images-upload';
 //import Dropzone from 'react-dropzone'
 //import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
@@ -85,7 +86,7 @@ let conditions = [
 let locations = [
   {
     id: '1',
-    value: '170M3'
+    value: '155B2'
   },
   {
     id: '2',
@@ -135,9 +136,9 @@ let productsServer = [
     ],
     quantity: '0',
     condition: '1',
-    conditionDescription: 'Bag Damage',
+    conditionDescription: ['Bag Damage'],
     otherCondition: '',
-    price: '0.00',
+    price: '40.00',
     bestOffer: false,
     freeShipping: false,
     domestic: '1',
@@ -188,7 +189,7 @@ let productsServer = [
     ],
     quantity: '2',
     condition: '0',
-    conditionDescription: '',
+    conditionDescription: [],
     otherCondition: '',
     price: '25.00',
     bestOffer: false,
@@ -230,7 +231,7 @@ let productsServer = [
     location: [],
     quantity: '1',
     condition: '1',
-    conditionDescription: 'Open Box',
+    conditionDescription: ['Open Box'],
     otherCondition: '',
     price: '0.00',
     bestOffer: true,
@@ -304,6 +305,8 @@ const initialState = {
   valueSearch: '',
   checkedSearch: false,
   userActive: null,
+  partNumber: '',
+  //partNumberList: [],
 }
 
 function reducer(state, action) {
@@ -325,7 +328,9 @@ function reducer(state, action) {
       valueSearch: state.valueSearch,
       checkedSearch: state.checkedSearch,
       userActive: state.userActive,
+      partNumber: state.partNumber,
     };
+    
 
   } else if (action.type === 'ADD_PRODUCT_SELECTED'){
     
@@ -347,7 +352,58 @@ function reducer(state, action) {
       valueSearch: state.valueSearch,
       checkedSearch: state.checkedSearch,
       userActive: state.userActive,
+      partNumber: state.partNumber,
+      //partNumberList: [],
     }
+
+  } else if (action.type === 'CHANGE_PARTNUMBER'){
+    
+    //const newProductSelected = action.id;
+    
+    return {
+      productsSelected: state.productsSelected,
+      activePage: state.activePage,
+      productsListSorted: state.productsListSorted,
+      productsByPage: state.productsByPage,
+      usersList: state.usersList,
+      conditionsList: state.conditionsList,
+      brandsList: state.brandsList,
+      locationsList: state.locationsList,
+      usersFilterActive: state.usersFilterActive,
+      statusFilterActive: state.statusFilterActive,
+      conditionsFilterActive: state.conditionsFilterActive,        
+      checkAll: state.checkAll,
+      valueSearch: state.valueSearch,
+      checkedSearch: state.checkedSearch,
+      userActive: state.userActive,
+      partNumber: action.partNumber,
+      //partNumberList: state.partNumberList,
+
+    }
+
+  /*} else if (action.type === 'CHANGE_PARTNUMBER_LIST'){
+    
+    //const newProductSelected = action.id;
+    
+    return {
+      productsSelected: state.productsSelected,
+      activePage: state.activePage,
+      productsListSorted: state.productsListSorted,
+      productsByPage: state.productsByPage,
+      usersList: state.usersList,
+      conditionsList: state.conditionsList,
+      brandsList: state.brandsList,
+      locationsList: state.locationsList,
+      usersFilterActive: state.usersFilterActive,
+      statusFilterActive: state.statusFilterActive,
+      conditionsFilterActive: state.conditionsFilterActive,        
+      checkAll: state.checkAll,
+      valueSearch: state.valueSearch,
+      checkedSearch: state.checkedSearch,
+      userActive: state.userActive,
+      //partNumberList: action.newPartNumberList,
+
+    }*/
 
   } else if (action.type === 'DELETE_PRODUCT_SELECTED'){
     const newProductsSelected = action.listSelected.filter(item => item !== action.id);
@@ -367,6 +423,9 @@ function reducer(state, action) {
       valueSearch: state.valueSearch,
       checkedSearch: state.checkedSearch,
       userActive: state.userActive,
+      partNumber: state.partNumber,
+      //partNumberList: [],
+  
     }; 
   } else if (action.type === 'CHANGE_ACTIVE_PAGE') { 
     return {
@@ -385,6 +444,9 @@ function reducer(state, action) {
       valueSearch: state.valueSearch,
       checkedSearch: state.checkedSearch,
       userActive: state.userActive,
+      partNumber: state.partNumber,
+      //partNumberList: [],
+  
     }; 
     
   } else if (action.type === 'CHANGE_USER_FILTER') {
@@ -404,6 +466,9 @@ function reducer(state, action) {
         valueSearch: state.valueSearch,
         checkedSearch: state.checkedSearch,
         userActive: state.userActive,
+        partNumber: state.partNumber,
+        //partNumberList: [],
+  
     }
 
   } else if (action.type === 'CHANGE_STATUS_FILTER') {
@@ -423,6 +488,9 @@ function reducer(state, action) {
         valueSearch: state.valueSearch,
         checkedSearch: state.checkedSearch,
         userActive: state.userActive,
+        partNumber: state.partNumber,
+        //partNumberList: [],
+  
     }
   } else if (action.type === 'CHANGE_CONDITION_FILTER') {
     return {
@@ -441,6 +509,9 @@ function reducer(state, action) {
         valueSearch: state.valueSearch,
         checkedSearch: state.checkedSearch,
         userActive: state.userActive,
+        partNumber: state.partNumber,
+        //partNumberList: [],
+  
     }
 
   } else if (action.type === 'UNCHECK_ALL'){
@@ -460,6 +531,9 @@ function reducer(state, action) {
       valueSearch: state.valueSearch,
       checkedSearch: state.checkedSearch,
       userActive: state.userActive,
+      partNumber: state.partNumber,
+      //partNumberList: [],
+  
     }
   } else if (action.type === 'CHECK_ALL'){
     
@@ -479,6 +553,9 @@ function reducer(state, action) {
       valueSearch: state.valueSearch,        
       checkedSearch: state.checkedSearch,
       userActive: state.userActive,
+      partNumber: state.partNumber,
+      //partNumberList: [],
+  
     }
   } else if (action.type === 'CHANGE_VALUE_SEARCH'){
     
@@ -498,6 +575,9 @@ function reducer(state, action) {
       conditionsFilterActive: state.conditionsFilterActive,             
       checkedSearch: state.checkedSearch,
       userActive: state.userActive,
+      partNumber: state.partNumber,
+      //partNumberList: [],
+  
     }
     
   } else if (action.type === 'CHANGE_CHECKED_SEARCH'){
@@ -518,11 +598,14 @@ function reducer(state, action) {
       valueSearch: state.valueSearch,        
       checkedSearch: action.checkedSearch,
       userActive: state.userActive,
+      partNumber: state.partNumber,
+      //partNumberList: [],
+  
     }
   
   } else if (action.type === 'ADD_NEW_LOCATION'){
     
-      const newLocationsList = state.locationsList.concat({id: uuid(), value: action.newLocation});
+      const newLocationsList = state.locationsList.concat({id: action.id, value: action.newLocation});
 
     return {    
       productsSelected: [],
@@ -540,8 +623,35 @@ function reducer(state, action) {
       valueSearch: state.valueSearch,        
       checkedSearch: state.checkedSearch,
       userActive: state.userActive,
-
+      partNumber: state.partNumber,
+      //partNumberList: state.partNumberList,
+  
     }
+
+  } else if (action.type === 'ADD_NEW_BRAND'){
+    
+    const newBrandList = state.brandsList.concat({id: uuid(), value: action.newBrand});
+
+  return {    
+    productsSelected: [],
+    checkAll: false,
+    activePage: state.activePage,
+    productsListSorted: state.productsListSorted,
+    productsByPage: state.productsByPage,
+    usersList: state.usersList,
+    conditionsList: state.conditionsList,
+    brandsList: newBrandList,
+    locationsList: state.locationsList,
+    usersFilterActive: state.usersFilterActive,
+    statusFilterActive: state.statusFilterActive,
+    conditionsFilterActive: state.conditionsFilterActive,
+    valueSearch: state.valueSearch,        
+    checkedSearch: state.checkedSearch,
+    userActive: state.userActive,
+    partNumber: state.partNumber,
+    //partNumberList: state.partNumberList,
+  
+  }
 
   } else if (action.type === 'CHANGE_ACTIVE_USER'){
     
@@ -561,6 +671,9 @@ function reducer(state, action) {
       valueSearch: '',        
       checkedSearch: false,
       userActive: action.userActive,
+      partNumber: state.partNumber,
+      //partNumberList: [],
+  
     }
 
 
@@ -628,19 +741,7 @@ class ImagesLightBox extends Component {
 }
 
 
-const SortableItem = SortableElement(({value, index}) =>
-      <Image size='small' src = {value} />
-    );
 
-const SortableList = SortableContainer(({items}) => {
-      return (
-        <ul>
-          {items.map((value, index) => (
-            <SortableItem key={`item-${index}`} index={index} value={value} />
-          ))}
-        </ul>
-      );
-    });
 
 
 
@@ -660,13 +761,6 @@ class DroppablePictures extends Component {
   }
 }
 
-const options = [
-  { key: 'English', text: 'English', value: 'English' },
-  { key: 'French', text: 'French', value: 'French' },
-  { key: 'Spanish', text: 'Spanish', value: 'Spanish' },
-  { key: 'German', text: 'German', value: 'German' },
-  { key: 'Chinese', text: 'Chinese', value: 'Chinese' },
-]
 
 
 class LocationsField extends Component {
@@ -676,35 +770,49 @@ class LocationsField extends Component {
     }),
     currentValues: this.props.currentLocations.map(item => {
       return item;
-    })
+    }),
+    currentLocationsId: this.props.currentLocations.map(item => {
+      return item;
+    }),
+    //locations: this.props.currentLocations,
   }
 
   
 
   handleAddition = (e, { value }) => {
-    console.log("Mi Valor: " + value);
+    console.log(uuid());
+    console.log("MI BUEN VALOR: " + value);
     console.log(this.props.locationsList);
     console.log(this.props.locationsList.filter(item => item.value.toLowerCase() === value.toLowerCase()).length);
     
     if (this.props.locationsList.filter(item => item.value.toLowerCase() === value.toLowerCase()).length === 0){
-
-    //console.log(window.helpers.getLocationFromId(this.props.locationsList, value.text));
-    //if (this.state.options.filter(item => item.value !== window.helpers.getLocationFromId(this.props.locationsList, item.value)).length === 0){
+    
+    const locationId = uuid();
+      
     this.setState({
       options: [{ text: value.toUpperCase(), value }, ...this.state.options],
     });
     store.dispatch(
       {
         type: 'ADD_NEW_LOCATION',
+        id: locationId,
         newLocation: value.toUpperCase(),
       }
     )
     }
   }
 
-  handleChange = (e, { value }) => this.setState({ currentValues: value })
+  handleChange = (e, { value }) => {
+    console.log("MI BUEN VALOR: " + value);
+    this.props.changeLocation(this.state.currentLocationsId); 
+    this.setState({ 
+      currentValues: value, 
+      
+    })
+  }
 
   render() {
+    console.log("MI ACTUALES LOCATIONS ID: " + this.state.currentLocationsId);
     const { currentValues } = this.state
     const renderLabel = label => ({
         color: 'black',
@@ -712,8 +820,6 @@ class LocationsField extends Component {
         icon: 'warehouse',
       }
     )
-    //console.log(currentValues);
-    //console.log(this.props.currentLocations);
     return (
       <div>
       <Dropdown
@@ -733,36 +839,335 @@ class LocationsField extends Component {
         onChange={this.handleChange}
       />
       </div>
-      
     )
   }
 }
 
-class ProductForm extends Component {
-
+class BrandsField extends Component {
+  state = { 
+    options: this.props.brandsList.map(item => {
+      return {key: item.id, text: item.value, value: item.id}
+    }),    
+    currentValue: this.props.currentBrand,
+  }
 
   
+
+  handleAddition = (e, { value }) => {
+    console.log("Mi Valor: " + value);
+    console.log(this.props.brandsList);
+    console.log(this.props.brandsList.filter(item => item.value.toLowerCase() === value.toLowerCase()).length);
+    
+    if (this.props.brandsList.filter(item => item.value.toLowerCase() === value.toLowerCase()).length === 0){
+
+    this.setState({
+      options: [{ text: value.toUpperCase(), value }, ...this.state.options],
+    });
+    store.dispatch(
+      {
+        type: 'ADD_NEW_BRAND',
+        newBrand: value.toUpperCase(),
+      }
+    )
+    }
+  }
+
+  handleChange = (e, { value }) => { 
+    this.setState({ currentValue: value });
+    this.props.changeBrand(value);
+  }
+
+  render() {
+    const { currentValue } = this.state
+    /*const renderLabel = label => ({
+        color: 'blue',
+        content: label.text,
+        size: 'small',
+      }
+    )*/
+    return (
+      <div>
+      <Form.Dropdown
+        label="Brand"
+        options={this.state.options}
+        closeOnChange
+        placeholder='Brands'
+        //renderLabel={renderLabel}
+        minCharacters = {2}
+        search
+        selection
+        fluid
+        //multiple
+        //upward
+        allowAdditions
+        value={currentValue}
+        onAddItem={this.handleAddition}
+        onChange={this.handleChange}
+      />
+      </div>
+    )
+  }
+}
+
+class PartNumberTag extends Component{
+  
+
+  handleOnClickIcon = () => {
+    this.props.deletePartNumber(this.props.id);
+  }
+
+  handleOnClickTag = () => {
+    console.log("PULSE TAG");
+  }
+
+  render(){
+    console.log(this.props.id);
+    return (
+      <span>
+      <Label key={this.props.id} as='a' onClick={this.handleOnClickTag}>
+        {this.props.partNumber}
+      <Icon name='delete' onClick={this.handleOnClickIcon} />
+    </Label><span> </span>
+    </span>
+    )
+  }
+}
+
+
+class PartNumbersField extends Component {
+  
+  state = {
+    //partNumber: this.props.partNumber,
+    partNumbersArray: this.props.item.partNumbers,
+  }
+
+  /*componentDidUpdate(){
+    this.props.changePartNumbers(this.state.partNumbersArray);
+  }*/
+
+  componentDidMount(){
+    store.dispatch({
+      type: 'CHANGE_PARTNUMBER',
+      partNumber: '',
+    })
+    
+    
+    
+  }
+
+  handleChange = (e) => {
+    
+    
+
+    if (e.key !== 'Enter'){
+      console.log(e.target.value);
+          
+      store.dispatch({
+        type: 'CHANGE_PARTNUMBER',
+        partNumber: e.target.value.toUpperCase(),
+      })
+    }
+  }
+
+  handleClick = (e) => {
+    console.log(e.type);
+    if (this.props.partNumber !== ''){
+    const newPartNumbersArray = this.state.partNumbersArray.concat(this.props.partNumber);
+    this.props.changePartNumbers(newPartNumbersArray);
+    this.setState({
+      //partNumber: '',
+      partNumbersArray: newPartNumbersArray,
+    })
+    store.dispatch({
+      type: 'CHANGE_PARTNUMBER',
+      partNumber: '',
+    })
+    
+    } 
+  }
+
+  handleKeyPress = (e) => {
+    if (e.key === 'Enter'){
+      console.log("Apreto Enter");
+      if (this.props.partNumber !== ''){
+      const newPartNumbersArray = this.state.partNumbersArray.concat(this.props.partNumber);
+      this.props.changePartNumbers(newPartNumbersArray);
+      this.setState({
+        //partNumber: '',
+        partNumbersArray: newPartNumbersArray,
+      })
+      store.dispatch({
+        type: 'CHANGE_PARTNUMBER',
+        partNumber: '',
+      })
+      
+    }
+    }
+  }
+  
+  
+  deletePartNumber = (id) => {
+    const newPartNumbersArray = this.state.partNumbersArray.filter((item, index) => index !== id);
+    this.props.changePartNumbers(newPartNumbersArray);
+    this.setState({
+      partNumbersArray: newPartNumbersArray,
+    })
+    store.dispatch({
+      type: 'CHANGE_PARTNUMBER',
+      partNumber: '',
+    }) 
+  }
+
+  onSort = (sortedList) => {
+    console.log("ordenando la lista: " + sortedList);
+    this.setState({
+      partNumbersArray: sortedList.map(item => item.partNumber),
+    })
+  }
 
   render(){
     
     
 
-    
-    
-    /*
-    const listPictures = this.props.item.pictures.map((item, index) => {
-      
-        return (
-          <ImagesLightBox pictures = {this.props.item.pictures} photoIndex = {index} />
-        )
+   const list = this.state.partNumbersArray.map((item, index) => 
+     {
+       return {content: (<PartNumberTag key = {index} partNumber = {item} id = {index} deletePartNumber = {this.deletePartNumber} />), partNumber: item}
       }
-    );*/
+    )
+   
+    
+    
+    return (
+      <div>
+        
+        <Form.Input onKeyPress={this.handleKeyPress} icon={{ name: 'add', circular: true, link: true, onClick: this.handleClick }} 
+        placeholder='Add Part Number...' onChange={this.handleChange} value = {this.props.partNumber} />
+        <br />
+        <DragSortableList items= {list} onSort={this.onSort} type="horizontal"/>
+        
+      </div>
+    )
+  }
+}
 
- 
 
 
+
+
+class ProductForm extends Component {
+
+  state = {
+    
+    fields: {
+      title: this.props.item.title,
+      brand: this.props.item.brand,
+      partNumbers: this.props.item.partNumbers,
+      quantity: this.props.item.quantity,
+      price: this.props.item.price,
+      bestOffer: this.props.item.bestOffer,
+      description: this.props.item.description,
+      condition: this.props.item.condition,
+      conditionDescription: this.props.item.conditionDescription,
+      location: this.props.item.location,
+    },
+
+    conditionDescriptionOptions: window.helpers.conditionDescriptionOptions,
+    //currentConditionDescription: this.props.item.conditionDescription,
+    
+    
+  }
+  
+
+  
+  changeBrand = (newBrand) => {
+      const fields = this.state.fields;
+      fields['brand'] = newBrand;
+      this.setState({ fields });
+   
+  }
+
+  changePartNumbers = (newPartNumbers) => {
+    const fields = this.state.fields;
+    fields['partNumbers'] = newPartNumbers;
+    this.setState({ fields });
+  }
+
+  changeLocation = (newLocations) => {
+    const fields = this.state.fields;
+    fields['location'] = newLocations;
+    this.setState({ fields });
+  }
+
+  onInputChange = (e) => {
+    console.log(e.target.name);
+    const fields = this.state.fields;
+    fields[e.target.name] = e.target.value;  
+    this.setState({
+        fields,
+      })
+  }
+
+  onCheckChange = (e, data) => {
+    console.log(data);
+    const fields = this.state.fields;
+    fields[data.name] = data.checked;
+    this.setState({ fields })
+  }
+
+  handleAddition = (e, {value} ) => {
+    this.setState({
+      conditionDescriptionOptions: [{ text: value, value }, ...this.state.conditionDescriptionOptions],
+    })
+  }
+
+  handleChangeConditiondescription = (e, {value} ) =>  {
+    
+    const fields = this.state.fields;
+    fields['conditionDescription'] = value;
+    this.setState({ fields })
+  }
+
+  /*handleChangeLocation = (e, {value} ) =>  {
+    
+    const fields = this.state.fields;
+    fields['location'] = value;
+    this.setState({ fields })
+  }*/
+
+  handleChangeCondition = (e, {value} ) =>  {
+    
+    const fields = this.state.fields;
+    fields['condition'] = value;
+    
+    this.setState({ fields })
+
+  
+
+
+  }
+
+  dropdownConditiondescription = (condition) => {
+    //const fields = this.state.fields;
+    if (condition !== '0'){      
+      return (
+        <Form.Dropdown name='conditionDescription' upward multiple search fluid label='Condition Description' placeholder='Condition Description' 
+            value={this.state.fields.conditionDescription} allowAdditions
+            selection closeOnChange options={this.state.conditionDescriptionOptions} 
+            onAddItem={this.handleAddition} onChange={this.handleChangeConditiondescription} 
+             />
+      ) 
+    } else {
+      //fields['conditionDescription'] = this.props.item.conditionDescription;
+      //this.setState({ fields });
+      return
+    }
+  }  
+
+  render(){    
+    
     
 
+    const dropdowntest = this.dropdownConditiondescription(this.state.fields.condition);
 
     return (
       <div>
@@ -782,16 +1187,36 @@ class ProductForm extends Component {
         
         </Image.Group>
         </Segment>
-        
+        <Segment>
+        <BrandsField brandsList={this.props.brandsList} currentBrand = {this.props.item.brand} 
+          changeBrand = {this.changeBrand}
+        />
+        </Segment>
+
+        <Segment>
+        <Label attached='top left' ><Icon name='tags' /> Part Numbers</Label>
+          <Form.Group inline>
+            <PartNumbersField 
+              item={this.props.item} partNumber = {this.props.partNumber} changePartNumbers = {this.changePartNumbers}
+              //partNumberList = {this.props.partNumberList}
+            />
+          </Form.Group>
+        </Segment>
         
         <Form.Group inline>
-          <Form.Input width={14} fluid label='Product Title' required placeholder='Product Title' value={this.props.item.title} />
-          <Form.Checkbox width={2} label='Auto' toggle />
+          
+          
+          <Form.Input width={16} fluid label='Product Title' required placeholder='Product Title' 
+              value={this.state.fields.title}
+              onChange={this.onInputChange}
+              name='title'
+          />
+          
         </Form.Group>
         <Form.Group inline widths='equal'>
-          <Form.Input  fluid label='Available' type="number" value={this.props.item.quantity}/>
-          <Form.Input  fluid label='Price' type="number" step='0.1' value={this.props.item.price} />
-          <Form.Checkbox label='Best Offer' checked={this.props.item.bestOffer} toggle />
+          <Form.Input  name='quantity' fluid label='Available' type="number" value={this.state.fields.quantity} onChange={this.onInputChange} />
+          <Form.Input  name='price' fluid label='Price' type="number" step='0.1' value={this.state.fields.price} onChange={this.onInputChange} />
+          <Form.Checkbox name='bestOffer' label='Best Offer' checked={this.state.fields.bestOffer} toggle onChange={this.onCheckChange} />
         </Form.Group>
         
         <Segment>
@@ -806,7 +1231,7 @@ class ProductForm extends Component {
           
         </Form.Group>
         </Segment>
-        <Form.TextArea label="Description" value = {this.props.item.description} />
+        <Form.TextArea name='description' label="Description" value = {this.state.fields.description} onChange={this.onInputChange} />
         <Segment>
         
         <Label attached='top left' ><Icon name='shipping' /> Shipping Information</Label>
@@ -836,12 +1261,27 @@ class ProductForm extends Component {
             
           </Form.Group>
         </Segment>
+        
+
+        <Segment>
+            <Label attached='top left' ><Icon name='star' /> Condition</Label>
+            
+            <Form.Dropdown name='conditions' upward fluid label='Condition' placeholder='Condition' defaultValue={this.state.fields.condition} 
+              fluid selection options={window.helpers.conditionOptions} onChange={this.handleChangeCondition} />
+             {dropdowntest}
+            
+        </Segment>
+
         <Segment>
             <Label attached='top left' ><Icon name='warehouse' /> Locations</Label>
             
-            <LocationsField locationsList={this.props.locationsList} currentLocations = {this.props.item.location} />
+            <LocationsField locationsList={this.props.locationsList} currentLocations = {this.props.item.location} 
+              changeLocation = {this.changeLocation}
+            />
           
         </Segment>
+
+        
           
         
         
@@ -995,7 +1435,12 @@ class Product extends Component {
                     
                   </Modal.Header>
                   <Modal.Content scrolling>
-                    <ProductForm key={this.props.item.uuid} id={this.props.item.uuid} item={this.props.item} locationsList={this.props.locationsList} />
+                    <ProductForm key={this.props.item.uuid} id={this.props.item.uuid} 
+                      item={this.props.item} locationsList={this.props.locationsList} 
+                      brandsList={this.props.brandsList}
+                      partNumber = {this.props.partNumber}
+                      //partNumberList = {this.props.partNumberList}
+                      />
                   </Modal.Content>
                   <Modal.Actions>
                   <Button color='green'>
@@ -1270,7 +1715,9 @@ class SelectableProduct extends Component {
         productsListGrouped = {this.props.productsListGrouped} 
         activePage = {this.props.activePage}
         brandsList = {this.props.brandsList}
-        locationsList = {this.props.locationsList} 
+        locationsList = {this.props.locationsList}
+        partNumber = {this.props.partNumber}
+        //partNumberList = {this.props.partNumberList} 
       />
     )
   }
@@ -1296,7 +1743,9 @@ class ProductsTableList extends Component {
         productsListGrouped = {this.props.productsListGrouped} 
         activePage = {this.props.activePage}
         brandsList = {this.props.brandsList}
-        locationsList = {this.props.locationsList} 
+        locationsList = {this.props.locationsList}
+        partNumber = {this.props.partNumber}
+        //partNumberList = {this.props.partNumberList} 
       />  
       )
         
@@ -1371,7 +1820,9 @@ class ProductsTable extends Component {
               usersList = {this.props.usersList}
               productsListSorted = {this.props.productsListSorted}
               brandsList = {this.props.brandsList}
-              locationsList = {this.props.locationsList}  
+              locationsList = {this.props.locationsList}
+              partNumber = {this.props.partNumber}
+              //partNumberList = {this.props.partNumberList}  
             />
           </Table.Body>
         </Table>
@@ -1652,6 +2103,8 @@ class ProductsDashboard extends Component {
           checkAll = {this.props.checkAll}
           brandsList = {this.props.brandsList}
           locationsList = {this.props.locationsList} 
+          partNumber = {this.props.partNumber}
+          //partNumberList = {this.props.partNumberList}
         />
         
         <ProductsDashboardPagination 
@@ -1738,12 +2191,18 @@ class App extends Component {
     const brandsList = state.brandsList;
     const locationsList = state.locationsList;
     const userActive = state.userActive;
+    const partNumber = state.partNumber;
+    //const partNumberList = state.partNumberList;
+
     console.log("EL ARRAY ORDENADO: " + productsListSorted);
     
     const checkAll = state.checkAll;
     
     console.log("Active Page in App: " + activePage);
-    console.log(locationsList);
+    console.log("TODOS MIS LOCATIONS: " + locationsList);
+    console.log("MI PARTNUMBER: " + partNumber);
+
+    
     
     
     
@@ -1765,6 +2224,8 @@ class App extends Component {
           locationsList = {locationsList}
           valueSearch = {valueSearch}
           checkedSearch = {checkedSearch}
+          partNumber = {partNumber}
+          //partNumberList = {partNumberList}
         />
       </div>
     );
