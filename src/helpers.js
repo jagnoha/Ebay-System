@@ -14,6 +14,10 @@ window.helpers = (function () {
 
     })
 
+    /*Array.prototype.diff = function(a) {
+        return this.filter(function(i) {return a.indexOf(i) < 0;});
+    };*/
+
     function getConditionFromId(list, id){
         return list.filter((item) => item.id === id)[0].type; 
     } 
@@ -28,6 +32,15 @@ window.helpers = (function () {
 
     function getLocationFromId(list, id){
         return list.filter((item) => item.id === id)[0].value;
+    }
+
+    function getLocationIdFromName(list, name){
+        const result = list.filter((item) => item.value === name);
+        if (result.length > 0){
+            return result[0].id;
+        } else {
+            return null;
+        }
     }
 
     function getColorConnection(status){
@@ -120,6 +133,7 @@ window.helpers = (function () {
         weightUnit,
         conditionOptions,
         conditionDescriptionOptions,
+        getLocationIdFromName,
     }
 
 }())

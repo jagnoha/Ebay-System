@@ -306,6 +306,8 @@ const initialState = {
   checkedSearch: false,
   userActive: null,
   partNumber: '',
+  locationItem: [],
+      
   //partNumberList: [],
 }
 
@@ -329,6 +331,8 @@ function reducer(state, action) {
       checkedSearch: state.checkedSearch,
       userActive: state.userActive,
       partNumber: state.partNumber,
+      locationItem: [],
+      
     };
     
 
@@ -353,6 +357,8 @@ function reducer(state, action) {
       checkedSearch: state.checkedSearch,
       userActive: state.userActive,
       partNumber: state.partNumber,
+      locationItem: [],
+      
       //partNumberList: [],
     }
 
@@ -377,6 +383,8 @@ function reducer(state, action) {
       checkedSearch: state.checkedSearch,
       userActive: state.userActive,
       partNumber: action.partNumber,
+      locationItem: state.locationItem,
+      
       //partNumberList: state.partNumberList,
 
     }
@@ -424,6 +432,8 @@ function reducer(state, action) {
       checkedSearch: state.checkedSearch,
       userActive: state.userActive,
       partNumber: state.partNumber,
+      locationItem: [],
+      
       //partNumberList: [],
   
     }; 
@@ -445,6 +455,8 @@ function reducer(state, action) {
       checkedSearch: state.checkedSearch,
       userActive: state.userActive,
       partNumber: state.partNumber,
+      locationItem: [],
+      
       //partNumberList: [],
   
     }; 
@@ -467,6 +479,8 @@ function reducer(state, action) {
         checkedSearch: state.checkedSearch,
         userActive: state.userActive,
         partNumber: state.partNumber,
+        locationItem: [],
+      
         //partNumberList: [],
   
     }
@@ -489,6 +503,8 @@ function reducer(state, action) {
         checkedSearch: state.checkedSearch,
         userActive: state.userActive,
         partNumber: state.partNumber,
+        locationItem: [],
+      
         //partNumberList: [],
   
     }
@@ -510,6 +526,8 @@ function reducer(state, action) {
         checkedSearch: state.checkedSearch,
         userActive: state.userActive,
         partNumber: state.partNumber,
+        locationItem: [],
+      
         //partNumberList: [],
   
     }
@@ -532,6 +550,8 @@ function reducer(state, action) {
       checkedSearch: state.checkedSearch,
       userActive: state.userActive,
       partNumber: state.partNumber,
+      locationItem: [],
+      
       //partNumberList: [],
   
     }
@@ -554,6 +574,8 @@ function reducer(state, action) {
       checkedSearch: state.checkedSearch,
       userActive: state.userActive,
       partNumber: state.partNumber,
+      locationItem: [],
+      
       //partNumberList: [],
   
     }
@@ -576,6 +598,8 @@ function reducer(state, action) {
       checkedSearch: state.checkedSearch,
       userActive: state.userActive,
       partNumber: state.partNumber,
+      locationItem: [],
+      
       //partNumberList: [],
   
     }
@@ -599,10 +623,39 @@ function reducer(state, action) {
       checkedSearch: action.checkedSearch,
       userActive: state.userActive,
       partNumber: state.partNumber,
+      locationItem: [],
+      
       //partNumberList: [],
   
     }
   
+  } else if (action.type === 'UPDATE_LOCATION_ITEM'){
+    
+    const newLocationsList = state.locationsList.concat({id: action.id, value: action.newLocation});
+
+  return {    
+    productsSelected: [],
+    checkAll: false,
+    activePage: state.activePage,
+    productsListSorted: state.productsListSorted,
+    productsByPage: state.productsByPage,
+    usersList: state.usersList,
+    conditionsList: state.conditionsList,
+    brandsList: state.brandsList,
+    locationsList: newLocationsList,
+    usersFilterActive: state.usersFilterActive,
+    statusFilterActive: state.statusFilterActive,
+    conditionsFilterActive: state.conditionsFilterActive,
+    valueSearch: state.valueSearch,        
+    checkedSearch: state.checkedSearch,
+    userActive: state.userActive,
+    partNumber: state.partNumber,
+    locationItem: action.locationItem,
+    //partNumberList: state.partNumberList,
+
+  }
+
+
   } else if (action.type === 'ADD_NEW_LOCATION'){
     
       const newLocationsList = state.locationsList.concat({id: action.id, value: action.newLocation});
@@ -624,6 +677,7 @@ function reducer(state, action) {
       checkedSearch: state.checkedSearch,
       userActive: state.userActive,
       partNumber: state.partNumber,
+      locationItem: state.locationItem,
       //partNumberList: state.partNumberList,
   
     }
@@ -649,6 +703,8 @@ function reducer(state, action) {
     checkedSearch: state.checkedSearch,
     userActive: state.userActive,
     partNumber: state.partNumber,
+    locationItem: state.locationItem,
+      
     //partNumberList: state.partNumberList,
   
   }
@@ -672,6 +728,8 @@ function reducer(state, action) {
       checkedSearch: false,
       userActive: action.userActive,
       partNumber: state.partNumber,
+      locationItem: [],
+      
       //partNumberList: [],
   
     }
@@ -771,48 +829,60 @@ class LocationsField extends Component {
     currentValues: this.props.currentLocations.map(item => {
       return item;
     }),
-    currentLocationsId: this.props.currentLocations.map(item => {
+    /*currentLocationsId: this.props.currentLocations.map(item => {
       return item;
-    }),
+    }),*/
     //locations: this.props.currentLocations,
   }
 
   
 
-  handleAddition = (e, { value }) => {
-    console.log(uuid());
-    console.log("MI BUEN VALOR: " + value);
-    console.log(this.props.locationsList);
-    console.log(this.props.locationsList.filter(item => item.value.toLowerCase() === value.toLowerCase()).length);
+  handleAddition = (e, data) => {
+        
+    const locationId = uuid();    
     
-    if (this.props.locationsList.filter(item => item.value.toLowerCase() === value.toLowerCase()).length === 0){
+    const newCurrentValue = this.state.currentValues
+    .filter(item => item !== data.value)
+    .concat(locationId)
+    .map(item => item);
     
-    const locationId = uuid();
-      
-    this.setState({
-      options: [{ text: value.toUpperCase(), value }, ...this.state.options],
-    });
     store.dispatch(
       {
         type: 'ADD_NEW_LOCATION',
         id: locationId,
-        newLocation: value.toUpperCase(),
+        newLocation: data.value.toUpperCase(),
       }
-    )
-    }
+    );
+    
+    this.setState({
+      options: [{ text: data.value.toUpperCase(), value: locationId }, ...this.state.options],
+      currentValues: newCurrentValue,
+    });
+    
+    this.props.changeLocation(newCurrentValue);
+
   }
 
-  handleChange = (e, { value }) => {
-    console.log("MI BUEN VALOR: " + value);
-    this.props.changeLocation(this.state.currentLocationsId); 
+  handleChange = (e,  data ) => {
+    console.log("ESTE ES EL NUEVO VALUE= > > > > > >  " + data.value);
+    console.log("OPTIONS: " + this.state.options);
+    
     this.setState({ 
-      currentValues: value, 
+      currentValues: data.value, 
       
     })
+
+    this.props.changeLocation(data.value);
+
+    console.log("CURRENT VALUES INSIDE HANDLE CHANGE: " + this.state.currentValues);
+    
   }
 
   render() {
-    console.log("MI ACTUALES LOCATIONS ID: " + this.state.currentLocationsId);
+    //console.log("VALORES DE LOCATION ACTUALES EN ESTE ITEM: " + this.state.currentValues);
+    //console.log("LISTA DE LOCATIONS DISPONIBLES: " + this.props.locationsList);
+    console.log("CURRENT VALUES INSIDE RENDER: " + this.state.currentValues);
+    
     const { currentValues } = this.state
     const renderLabel = label => ({
         color: 'black',
@@ -1276,7 +1346,7 @@ class ProductForm extends Component {
             <Label attached='top left' ><Icon name='warehouse' /> Locations</Label>
             
             <LocationsField locationsList={this.props.locationsList} currentLocations = {this.props.item.location} 
-              changeLocation = {this.changeLocation}
+              changeLocation = {this.changeLocation} item = {this.props.item}
             />
           
         </Segment>
@@ -1428,10 +1498,6 @@ class Product extends Component {
                     
                         <h1>Products Editor</h1>
                         <h3>{this.props.item.title}</h3>
-                     
-                        <h4>{this.props.item.status}</h4>
-                      
-
                     
                   </Modal.Header>
                   <Modal.Content scrolling>
@@ -2192,6 +2258,7 @@ class App extends Component {
     const locationsList = state.locationsList;
     const userActive = state.userActive;
     const partNumber = state.partNumber;
+    const locationItem = state.locationItem;
     //const partNumberList = state.partNumberList;
 
     console.log("EL ARRAY ORDENADO: " + productsListSorted);
@@ -2225,6 +2292,7 @@ class App extends Component {
           valueSearch = {valueSearch}
           checkedSearch = {checkedSearch}
           partNumber = {partNumber}
+          locationItem = {locationItem}
           //partNumberList = {partNumberList}
         />
       </div>
