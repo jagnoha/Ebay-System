@@ -924,11 +924,11 @@ class BrandsField extends Component {
   
 
   handleAddition = (e, { value }) => {
-    console.log("Mi Valor: " + value);
-    console.log(this.props.brandsList);
-    console.log(this.props.brandsList.filter(item => item.value.toLowerCase() === value.toLowerCase()).length);
+        
     
     if (this.props.brandsList.filter(item => item.value.toLowerCase() === value.toLowerCase()).length === 0){
+      
+      
 
     this.setState({
       options: [{ text: value.toUpperCase(), value }, ...this.state.options],
@@ -939,12 +939,48 @@ class BrandsField extends Component {
         newBrand: value.toUpperCase(),
       }
     )
+    
+    } else {
+      this.setState({
+        options: this.state.options,
+      });
     }
+    
+    
+
   }
 
   handleChange = (e, { value }) => { 
+    const brandOld = this.state.options.filter(item => {
+      if (item.value === this.state.currentValue){
+        return item;
+      }
+    });
+
+    const brandNew = this.state.options.filter(item => {
+      if (item.value === value){
+        return item;
+      }
+    });
+
+    console.log("ESTA REALIZANDO UN CAMBIO!!!!!");
+
+    if (brandOld.length > 0 && brandNew.length > 0){
+     
+      console.log("DENTRO DEL IF !!!!!!!!!!");
+      console.log("BRAND OLD: " + brandOld[0].text);
+      console.log("BRAND NEW: " + brandNew[0].text);
+      this.props.replaceTitle(brandOld[0].text, brandNew[0].text);
+      this.props.replaceDescription(brandOld[0].text, brandNew[0].text);
+    }
+
     this.setState({ currentValue: value });
     this.props.changeBrand(value);
+    
+    this.props.replaceTitle(brandOld[0].text, value);
+    this.props.replaceDescription(brandOld[0].text, value);
+  
+  
   }
 
   render() {
@@ -1147,12 +1183,54 @@ class ProductForm extends Component {
     
   }
   
+  replaceTitle = (oldBrand, newBrand) => {
+    console.log("my Old Brand " + oldBrand);
+    console.log("my New Brand " + newBrand);
+    const fields = this.state.fields;
+    const oldTitle = fields['title'];
+    //const re =  '/'+oldBrand+'/gi';
+    //const re = /Ford/gi;
+    const re = new RegExp(oldBrand, 'gi');
+    console.log(re);
+    const newTitle = oldTitle.replace(re, newBrand);
+    console.log(newTitle);
+    fields['title'] = newTitle;
+    this.setState({ fields });
+  }
 
+  replaceDescription = (oldBrand, newBrand) => {
+    console.log("my Old Brand " + oldBrand);
+    console.log("my New Brand " + newBrand);
+    const fields = this.state.fields;
+    const oldDescription = fields['description'];
+    //const re =  '/'+oldBrand+'/gi';
+    //const re = /Ford/gi;
+    const re = new RegExp(oldBrand, 'gi');
+    console.log(re);
+    const newDescription = oldDescription.replace(re, newBrand);
+    fields['description'] = newDescription;
+    this.setState({ fields });
+  }
   
   changeBrand = (newBrand) => {
-      const fields = this.state.fields;
+      
+      
+    
+      const fields = this.state.fields; 
+      
+      
+           
+      /*const test = this.props.brandsList.filter((item) => {
+        if (newBrand === item.value){
+          return item.id;
+        }
+      })*/
+      
+            
       fields['brand'] = newBrand;
       this.setState({ fields });
+
+      
    
   }
 
@@ -1259,7 +1337,7 @@ class ProductForm extends Component {
         </Segment>
         <Segment>
         <BrandsField brandsList={this.props.brandsList} currentBrand = {this.props.item.brand} 
-          changeBrand = {this.changeBrand}
+          changeBrand = {this.changeBrand} replaceTitle = {this.replaceTitle} replaceDescription = {this.replaceDescription}
         />
         </Segment>
 
