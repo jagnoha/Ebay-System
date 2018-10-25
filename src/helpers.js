@@ -83,7 +83,7 @@ window.helpers = (function () {
 
     const weightUnit = [
         {value:'oz', text: 'oz'},
-        {value:'lb', text: 'lb'},
+        {value:'lbs', text: 'lb'},
         {value:'gr', text: 'gr'},
         {value:'Kg', text: 'Kg'},
     ]
@@ -111,7 +111,7 @@ window.helpers = (function () {
         {value:'Vintage', text: 'Vintage'},
         {value:'Unknown Condition', text: 'Unknown Condition'},
         {value:'New Take Off', text: 'New Take Off'},
-        {value:'New, Open Bag/Box for Taking Pictures', text: 'New, Open Bag/Box for Taking Pictures'},
+        {value:'New, Open Bag/Box for Taking Pictures', text: 'New, Open Bag/Box for Taking Pictures'},        
 
 
 

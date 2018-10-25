@@ -3,10 +3,12 @@ import { createStore } from 'redux';
 import logo from './logo.svg';
 import './App.css';
 import './helpers.js';
+import './client.js';
 import { Label, Input, Search, Form, Radio, Pagination, Container, Divider, Segment, Grid, Table, Modal, 
-  Dropdown, Image, Item, Checkbox, Button, Icon, Message, Header } from 'semantic-ui-react'
+  Dropdown, Image, Item, Checkbox, Button, Dimmer, Loader, Icon, Message, Header } from 'semantic-ui-react'
 import _ from 'lodash';
 import Lightbox from 'react-image-lightbox';
+import axios from 'axios';
 
 import 'react-image-lightbox/style.css';
 import DragSortableList from 'react-drag-sortable'
@@ -28,6 +30,8 @@ const uuid = require('uuid/v4');
   });
   }
 });*/
+
+
 
 let users = [
   {
@@ -289,14 +293,17 @@ let productsServer = [
 
 
 const initialState = {
-  productsList: productsServer,
-  productsListSorted: productsServer,  
-  productsByPage: 3,  
+  rawList: [],
+  rawLocations: [],
+  rawBrands: [],
+  productsList: [],
+  productsListSorted: [],  
+  productsByPage: 10,  
   activePage: 1,
   productsSelected: [],
   conditionsList: conditions,
-  brandsList: brands,
-  locationsList: locations,
+  brandsList: [],
+  locationsList: [],
   usersList: users,
   usersFilterActive: 'ALL',
   statusFilterActive: 'ALL',
@@ -307,6 +314,9 @@ const initialState = {
   userActive: null,
   partNumber: '',
   locationItem: [],
+  globalDirection: null,
+  globalColumn: null,
+  
       
   //partNumberList: [],
 }
@@ -315,6 +325,11 @@ function reducer(state, action) {
   
    if (action.type === 'SORT_PRODUCT_LIST'){
     return {
+      globalDirection: state.globalDirection,
+      globalColumn: state.globalColumn,
+      rawLocations: state.rawLocations,
+      rawBrands: state.rawBrands,
+      rawList: state.rawList,
       productsListSorted: action.listSorted,
       productsSelected: [],
       productsByPage: state.productsByPage,
@@ -334,13 +349,154 @@ function reducer(state, action) {
       locationItem: [],
       
     };
+
     
+  } else if (action.type === 'UPDATE_LISTINGS'){
+
+   
+    return {
+      globalDirection: state.globalDirection,
+      globalColumn: state.globalColumn,
+      rawList: action.listingsFromDB.data,
+      rawLocations: state.rawLocations,
+      rawBrands: state.rawBrands,
+      productsSelected: state.productsSelected,
+      activePage: state.activePage,
+      //productsListSorted: _.sortBy(action.listingsFromDB.data, 'timestamp').reverse(),    
+      
+      productsListSorted: action.direction === 'ascending' ? _.sortBy(action.listingsFromDB.data, (item => {
+        if (action.field === 'price'){
+          return parseFloat(item[action.field]);
+        } else {
+          return item[action.field];
+        }
+        
+      })).reverse() : _.sortBy(action.listingsFromDB.data, (item => {
+        if (action.field === 'price'){
+          return parseFloat(item[action.field]);
+        } else {
+          return item[action.field];
+        }
+        
+      })),
+      
+      
+      /*productsListSorted: action.direction === 'ascending' ? _.sortBy(action.listingsFromDB.data, action.field).reverse() :     
+      _.sortBy(action.listingsFromDB.data, action.field),*/
+      
+      //productsListSorted: state.productsListSorted,
+      
+      productsByPage: state.productsByPage,
+      usersList: state.usersList,
+      conditionsList: state.conditionsList,
+      brandsList: state.brandsList,
+      locationsList: state.locationsList,
+      usersFilterActive: state.usersFilterActive,
+      statusFilterActive: state.statusFilterActive,
+      conditionsFilterActive: state.conditionsFilterActive,        
+      checkAll: state.checkAll,
+      valueSearch: state.valueSearch,
+      checkedSearch: state.checkedSearch,
+      userActive: state.userActive,
+      partNumber: state.partNumber,
+      locationItem: state.locationItem,
+
+    }
+
+  } else if (action.type === 'UPDATE_FIELD_DIRECTION'){
+
+    return {
+      globalDirection: action.directionValue,
+      globalColumn: action.fieldValue,
+      rawLocations: state.rawLocations,
+      rawBrands: state.rawBrands,
+      rawList: state.rawList,
+      productsSelected: [],
+      activePage: 1,
+      productsListSorted: state.productsListSorted,
+      productsByPage: state.productsByPage,
+      usersList: state.usersList,
+      conditionsList: state.conditionsList,
+      brandsList: state.brandsList,
+      locationsList: state.locationsFromDB,
+      usersFilterActive: state.usersFilterActive,
+      statusFilterActive: state.statusFilterActive,
+      conditionsFilterActive: state.conditionsFilterActive,        
+      checkAll: false,
+      valueSearch: state.valueSearch,
+      checkedSearch: state.checkedSearch,
+      userActive: state.userActive,
+      partNumber: state.partNumber,
+      locationItem: [],
+    }
+
+  } else if (action.type === 'UPDATE_LOCATIONS'){
+
+    return {
+      globalDirection: state.globalDirection,
+      globalColumn: state.globalColumn,
+      rawLocations: action.locationsFromDB.data,
+      rawBrands: state.rawBrands,
+      rawList: state.rawList,
+      productsSelected: state.productsSelected,
+      activePage: state.activePage,
+      productsListSorted: state.productsListSorted,
+      productsByPage: state.productsByPage,
+      usersList: state.usersList,
+      conditionsList: state.conditionsList,
+      brandsList: state.brandsList,
+      locationsList: action.locationsFromDB,
+      usersFilterActive: state.usersFilterActive,
+      statusFilterActive: state.statusFilterActive,
+      conditionsFilterActive: state.conditionsFilterActive,        
+      checkAll: state.checkAll,
+      valueSearch: state.valueSearch,
+      checkedSearch: state.checkedSearch,
+      userActive: state.userActive,
+      partNumber: state.partNumber,
+      locationItem: state.locationItem,
+
+    }
+  
+
+  } else if (action.type === 'UPDATE_BRANDS'){
+
+    return {
+      globalDirection: state.globalDirection,
+      globalColumn: state.globalColumn,
+      rawBrands: action.brandsFromDB.data,
+      rawLocations: state.rawLocations,
+      rawList: state.rawList,
+      productsSelected: state.productsSelected,
+      activePage: state.activePage,
+      productsListSorted: state.productsListSorted,
+      productsByPage: state.productsByPage,
+      usersList: state.usersList,
+      conditionsList: state.conditionsList,
+      brandsList: action.brandsFromDB,
+      locationsList: state.locationsList,
+      usersFilterActive: state.usersFilterActive,
+      statusFilterActive: state.statusFilterActive,
+      conditionsFilterActive: state.conditionsFilterActive,        
+      checkAll: state.checkAll,
+      valueSearch: state.valueSearch,
+      checkedSearch: state.checkedSearch,
+      userActive: state.userActive,
+      partNumber: state.partNumber,
+      locationItem: state.locationItem,
+
+    }
 
   } else if (action.type === 'ADD_PRODUCT_SELECTED'){
     
     const newProductSelected = action.id;
     
     return {
+      globalDirection: state.globalDirection,
+      globalColumn: state.globalColumn,
+      rawList: state.rawList,
+      rawLocations: state.rawLocations,
+      rawBrands: state.rawBrands,      
       productsSelected: action.listSelected.concat(newProductSelected),
       activePage: state.activePage,
       productsListSorted: state.productsListSorted,
@@ -367,6 +523,11 @@ function reducer(state, action) {
     //const newProductSelected = action.id;
     
     return {
+      globalDirection: state.globalDirection,
+      globalColumn: state.globalColumn,
+      rawList: state.rawList,
+      rawLocations: state.rawLocations,
+      rawBrands: state.rawBrands,
       productsSelected: state.productsSelected,
       activePage: state.activePage,
       productsListSorted: state.productsListSorted,
@@ -416,6 +577,11 @@ function reducer(state, action) {
   } else if (action.type === 'DELETE_PRODUCT_SELECTED'){
     const newProductsSelected = action.listSelected.filter(item => item !== action.id);
     return {
+      globalDirection: state.globalDirection,
+      globalColumn: state.globalColumn,
+      rawList: state.rawList,
+      rawLocations: state.rawLocations,
+      rawBrands: state.rawBrands,
       productsSelected: newProductsSelected,
       activePage: state.activePage,
       productsListSorted: state.productsListSorted,
@@ -439,6 +605,11 @@ function reducer(state, action) {
     }; 
   } else if (action.type === 'CHANGE_ACTIVE_PAGE') { 
     return {
+      globalDirection: state.globalDirection,
+      globalColumn: state.globalColumn,
+      rawList: state.rawList,
+      rawLocations: state.rawLocations,
+      rawBrands: state.rawBrands,
       activePage: Number(action.activePage),
       productsListSorted: state.productsListSorted,
       productsByPage: state.productsByPage,
@@ -463,6 +634,11 @@ function reducer(state, action) {
     
   } else if (action.type === 'CHANGE_USER_FILTER') {
     return {
+        globalDirection: state.globalDirection,
+        globalColumn: state.globalColumn,
+        rawList: state.rawList,
+        rawLocations: state.rawLocations,
+        rawBrands: state.rawBrands,
         usersFilterActive: action.usersFilterActive,
         activePage: 1,
         productsListSorted: state.productsListSorted,
@@ -487,6 +663,11 @@ function reducer(state, action) {
 
   } else if (action.type === 'CHANGE_STATUS_FILTER') {
     return {
+        globalDirection: state.globalDirection,
+        globalColumn: state.globalColumn,
+        rawList: state.rawList,
+        rawLocations: state.rawLocations,
+        rawBrands: state.rawBrands,
         statusFilterActive: action.statusFilterActive,
         usersFilterActive: state.usersFilterActive,
         conditionsFilterActive: state.conditionsFilterActive,
@@ -510,6 +691,11 @@ function reducer(state, action) {
     }
   } else if (action.type === 'CHANGE_CONDITION_FILTER') {
     return {
+        globalDirection: state.globalDirection,
+        globalColumn: state.globalColumn, 
+        rawList: state.rawList,
+        rawLocations: state.rawLocations,
+        rawBrands: state.rawBrands,
         statusFilterActive: state.statusFilterActive,
         usersFilterActive: state.usersFilterActive,
         conditionsFilterActive: action.conditionsFilterActive,
@@ -533,7 +719,12 @@ function reducer(state, action) {
     }
 
   } else if (action.type === 'UNCHECK_ALL'){
-    return {    
+    return {
+      globalDirection: state.globalDirection,
+      globalColumn: state.globalColumn,
+      rawList: state.rawList,
+      rawLocations: state.rawLocations,
+      rawBrands: state.rawBrands,    
       productsSelected: [],
       checkAll: false,
       activePage: state.activePage,
@@ -557,7 +748,12 @@ function reducer(state, action) {
     }
   } else if (action.type === 'CHECK_ALL'){
     
-    return {    
+    return {
+      globalDirection: state.globalDirection,
+      globalColumn: state.globalColumn,
+      rawList: state.rawList,
+      rawLocations: state.rawLocations,
+      rawBrands: state.rawBrands,    
       productsSelected: action.productsSelected,
       checkAll: true,
       activePage: state.activePage,
@@ -582,6 +778,11 @@ function reducer(state, action) {
   } else if (action.type === 'CHANGE_VALUE_SEARCH'){
     
     return {
+      globalDirection: state.globalDirection,
+      globalColumn: state.globalColumn,
+      rawList: state.rawList,
+      rawLocations: state.rawLocations,
+      rawBrands: state.rawBrands,
       productsSelected: [],
       checkAll: false,
       valueSearch: action.valueSearch,
@@ -606,7 +807,12 @@ function reducer(state, action) {
     
   } else if (action.type === 'CHANGE_CHECKED_SEARCH'){
     
-    return {    
+    return {
+      globalDirection: state.globalDirection,
+      globalColumn: state.globalColumn,
+      rawList: state.rawList,
+      rawLocations: state.rawLocations,
+      rawBrands: state.rawBrands,    
       productsSelected: [],
       checkAll: false,
       activePage: 1,
@@ -633,7 +839,12 @@ function reducer(state, action) {
     
     const newLocationsList = state.locationsList.concat({id: action.id, value: action.newLocation});
 
-  return {    
+  return {
+    globalDirection: state.globalDirection,
+    globalColumn: state.globalColumn,
+    rawList: state.rawList,
+    rawLocations: state.rawLocations,
+    rawBrands: state.rawBrands,    
     productsSelected: [],
     checkAll: false,
     activePage: state.activePage,
@@ -660,7 +871,12 @@ function reducer(state, action) {
     
       const newLocationsList = state.locationsList.concat({id: action.id, value: action.newLocation});
 
-    return {    
+    return {
+      globalDirection: state.globalDirection,
+      globalColumn: state.globalColumn,
+      rawList: state.rawList,
+      rawLocations: state.rawLocations,
+      rawBrands: state.rawBrands,    
       productsSelected: [],
       checkAll: false,
       activePage: state.activePage,
@@ -686,7 +902,13 @@ function reducer(state, action) {
     
     const newBrandList = state.brandsList.concat({id: uuid(), value: action.newBrand});
 
-  return {    
+  return {
+    globalDirection: state.globalDirection,
+    globalColumn: state.globalColumn,
+    rawList: state.rawList,
+    rawLocations: state.rawLocations,
+    rawBrands: state.rawBrands,    
+    //rawBrands: newBrandList,
     productsSelected: [],
     checkAll: false,
     activePage: state.activePage,
@@ -711,7 +933,12 @@ function reducer(state, action) {
 
   } else if (action.type === 'CHANGE_ACTIVE_USER'){
     
-    return {    
+    return {
+      globalDirection: state.globalDirection,
+      globalColumn: state.globalColumn,
+      rawList: state.rawList,
+      rawLocations: state.rawLocations,
+      rawBrands: state.rawBrands,    
       productsSelected: [],
       checkAll: false,
       activePage: 1,
@@ -765,7 +992,7 @@ class ImagesLightBox extends Component {
       <span>
         
         
-        <Image size='small' src = {this.props.pictures[photoIndex]} onClick={() => this.setState({ isOpen: true })}
+        <Image size={this.props.size} src = {"http://localhost:8083/images/" + this.props.pictures[photoIndex] + ".jpg"} onClick={() => this.setState({ isOpen: true })}
         
         
         
@@ -777,9 +1004,9 @@ class ImagesLightBox extends Component {
         
         {isOpen && (
           <Lightbox
-            mainSrc={images[photoIndex]}
-            nextSrc={images[(photoIndex + 1) % images.length]}
-            prevSrc={images[(photoIndex + images.length - 1) % images.length]}
+            mainSrc={"http://localhost:8083/images/"+images[photoIndex]+".jpg"}
+            nextSrc={"http://localhost:8083/images/"+images[(photoIndex + 1) % images.length] + ".jpg"}
+            prevSrc={"http://localhost:8083/images/"+images[(photoIndex + images.length - 1) % images.length]+ ".jpg"}
             onCloseRequest={() => this.setState({ isOpen: false })}
             onMovePrevRequest={() =>
               this.setState({
@@ -809,7 +1036,7 @@ class DroppablePictures extends Component {
     const listPictures = this.props.picturesList.map((item, index) => {
       
       return (
-        <ImagesLightBox key={index} pictures = {this.props.picturesList} photoIndex = {index} />
+        <ImagesLightBox size='small' key={index} pictures = {this.props.picturesList} photoIndex = {index} />
       )
     }
     );
@@ -1298,11 +1525,25 @@ class ProductForm extends Component {
     //const fields = this.state.fields;
     if (condition !== '0'){      
       return (
+        <div>
         <Form.Dropdown name='conditionDescription' upward multiple search fluid label='Condition Description' placeholder='Condition Description' 
             value={this.state.fields.conditionDescription} allowAdditions
             selection closeOnChange options={this.state.conditionDescriptionOptions} 
             onAddItem={this.handleAddition} onChange={this.handleChangeConditiondescription} 
              />
+        {this.state.fields.conditionDescription.map(item => {
+          
+          return (
+            <Label as='a' basic>
+          {item}
+        </Label>
+          )
+        
+        })}
+        
+        
+        
+        </div>
       ) 
     } else {
       //fields['conditionDescription'] = this.props.item.conditionDescription;
@@ -1517,16 +1758,12 @@ class Product extends Component {
                 <Label color={window.helpers.getColorConnection(this.props.item.status)}>{this.props.item.status}</Label>                
               </Table.Cell>
               <Table.Cell>
-                <Modal trigger={<Image size='tiny' src={this.props.item.pictures[0]} />}>
-                  <Modal.Content image>
-                    <Image src={this.props.item.pictures[0]} />
-                  </Modal.Content>
-                </Modal>
-                <Modal trigger={<Image size='tiny' src={this.props.item.pictures.slice(-1)} />}> 
-                  <Modal.Content image>
-                    <Image src={this.props.item.pictures.slice(-1)} />
-                  </Modal.Content>
-                </Modal>
+                <ImagesLightBox size='tiny' key={0} pictures = {this.props.item.pictures} photoIndex = {0} />
+                <ImagesLightBox size='tiny' key={1} pictures = {this.props.item.pictures} photoIndex = {this.props.item.pictures.length-1} />
+                
+                
+                
+                
                 </Table.Cell>
               
               <Table.Cell>
@@ -1537,7 +1774,7 @@ class Product extends Component {
               {window.helpers.getBrandFromId(this.props.brandsList, this.props.item.brand )}
               </Table.Cell>
               <Table.Cell>
-                <div>{this.props.item.partNumbers[0]}</div><span className='App-secondary-table-title'>{this.props.item.uuid}</span>  
+                <div>{this.props.item.partNumbers[0]}</div><span className='App-secondary-table-title'>{this.props.item.sku}</span>  
               </Table.Cell>
 
 
@@ -1745,26 +1982,60 @@ class SelectAllItems extends Component {
 class SortableProductList extends Component {
   
   state = {
-    column: null,
+    columnTemp: null,
     data: this.props.productsListSorted,
+    //data: _.sortBy(this.props.productsListSorted, 'brand'),
+    //data: this.props.rawList,
     direction: null,
   }
 
-  /*componentDidMount(){
+  componentDidMount(){
     store.subscribe(() => this.forceUpdate());
-  }*/
+    /*store.dispatch({
+      type: 'UPDATE_COLUMN',
+      columnValue: 'timestamp',
+      })*/
+  }
 
   
   handleSort = clickedColumn => () => {    
     
-    const { column, data, direction } = this.state
+    const { columnTemp, data, direction } = this.state;
+    //const column = this.props.column;
 
-    if (column !== clickedColumn) {
+    window.client.getListingsFromDB(store, this.state.direction, clickedColumn)
+
+    if (columnTemp !== clickedColumn) {
+      
+      
+
       this.setState({
-        column: clickedColumn,
-        data: _.sortBy(data, [clickedColumn]),
+        columnTemp: clickedColumn,
+        //data: _.sortBy(data, [clickedColumn]),
+        
+        data: _.sortBy(data, (item => {
+          if (clickedColumn === 'price'){
+            return parseFloat(item[clickedColumn]);
+          } else {
+            return item[clickedColumn];
+          }
+          
+        })),
+        
         direction: 'ascending',        
+      })     
+
+      store.dispatch({
+        type: 'UPDATE_FIELD_DIRECTION',
+        fieldValue: clickedColumn,
+        directionValue: direction,
       })
+
+      
+      
+
+      
+      
       
       return
     }
@@ -1773,15 +2044,26 @@ class SortableProductList extends Component {
       data: data.reverse(),      
       direction: direction === 'ascending' ? 'descending' : 'ascending',      
     })
+    
+    store.dispatch({
+      type: 'UPDATE_FIELD_DIRECTION',
+      fieldValue: clickedColumn,
+      directionValue: direction, //=== 'ascending' ? 'descending' : 'ascending',
+    })
 
     store.dispatch({
       type: 'SORT_PRODUCT_LIST',
       listSorted: this.state.data,
     });
+
+    
+    
   }
   
   render() {
-    const { column, data, direction } = this.state
+    const { columnTemp, data, direction } = this.state
+    //const column = this.props.column;
+    //console.log("ESTA ES LA COLUMNA:" + this.props.column);
     return (
         
         <Table.Header>
@@ -1795,11 +2077,11 @@ class SortableProductList extends Component {
 
 
 
-              <Table.HeaderCell sorted={column === 'authorId' ? direction: null}
+              <Table.HeaderCell sorted={columnTemp === 'authorId' ? direction: null}
                 onClick={this.handleSort('authorId')}>
                 User
               </Table.HeaderCell>
-              <Table.HeaderCell sorted={column === 'status' ? direction: null}
+              <Table.HeaderCell sorted={columnTemp === 'status' ? direction: null}
                  onClick={this.handleSort('status')}>
                 Status
               </Table.HeaderCell>
@@ -1807,30 +2089,30 @@ class SortableProductList extends Component {
                 Pictures
               </Table.HeaderCell>
               
-              <Table.HeaderCell sorted={column === 'condition' ? direction: null}
+              <Table.HeaderCell sorted={columnTemp === 'condition' ? direction: null}
                 onClick={this.handleSort('condition')}>
                 Condition
               </Table.HeaderCell>
-              <Table.HeaderCell sorted={column === 'brand' ? direction: null}
+              <Table.HeaderCell sorted={columnTemp === 'brand' ? direction: null}
                 onClick={this.handleSort('brand')}>
                 Brand
               </Table.HeaderCell>
-              <Table.HeaderCell sorted={column === 'partNumbers' ? direction: null}
+              <Table.HeaderCell sorted={columnTemp === 'partNumbers' ? direction: null}
                 onClick={this.handleSort('partNumbers')}
               ><div>Part Number</div><span className='App-secondary-table-title'>SKU</span></Table.HeaderCell>
               <Table.HeaderCell
-                sorted={column === 'title' ? direction: null}
+                sorted={columnTemp === 'title' ? direction: null}
                 onClick={this.handleSort('title')}
               ><div>Product Name</div><span className='App-secondary-table-title'>Locations</span></Table.HeaderCell>
-              <Table.HeaderCell sorted={column === 'quantity' ? direction: null}
+              <Table.HeaderCell sorted={columnTemp === 'quantity' ? direction: null}
                 onClick={this.handleSort('quantity')}>
                 Available
               </Table.HeaderCell>
-              <Table.HeaderCell sorted={column === 'price' ? direction: null}
+              <Table.HeaderCell sorted={columnTemp === 'price' ? direction: null}
                 onClick={this.handleSort('price')}>
                 Price
               </Table.HeaderCell>
-              <Table.HeaderCell sorted={column === 'timestamp' ? direction: null}
+              <Table.HeaderCell sorted={columnTemp === 'timestamp' ? direction: null}
                 onClick={this.handleSort('timestamp')}>
                 Date Created
               </Table.HeaderCell>
@@ -1942,6 +2224,9 @@ class ProductsTableList extends Component {
 
 class ProductsTable extends Component {
   
+  componentDidMount(){
+    store.subscribe(() => this.forceUpdate());
+  }
     
   render(){
    
@@ -1953,6 +2238,8 @@ class ProductsTable extends Component {
             productsListGrouped = {this.props.productsListGrouped} 
             activePage = {this.props.activePage}
             checkAll = {this.props.checkAll}
+            rawList = {this.props.rawList}
+            
           />
           <Table.Body>
             <ProductsTableList 
@@ -1966,6 +2253,7 @@ class ProductsTable extends Component {
               brandsList = {this.props.brandsList}
               locationsList = {this.props.locationsList}
               partNumber = {this.props.partNumber}
+              //column = {this.props.column}
               //partNumberList = {this.props.partNumberList}  
             />
           </Table.Body>
@@ -1995,9 +2283,9 @@ class ProductsFilterByUser extends Component {
     this.setState({value})
   }
 
-  /*componentDidMount(){
+  componentDidMount(){
     store.subscribe(() => this.forceUpdate());
-  }*/
+  }
 
   render(){
     const { value } = this.state;
@@ -2248,6 +2536,8 @@ class ProductsDashboard extends Component {
           brandsList = {this.props.brandsList}
           locationsList = {this.props.locationsList} 
           partNumber = {this.props.partNumber}
+          rawList = {this.props.rawList}
+          
           //partNumberList = {this.props.partNumberList}
         />
         
@@ -2269,6 +2559,16 @@ class App extends Component {
   
   componentDidMount(){
     store.subscribe(() => this.forceUpdate());
+    this.loadInformationFromServer();
+    setInterval(this.loadInformationFromServer, 5000);
+    
+  }
+
+  loadInformationFromServer = () => {
+    const state = store.getState();
+    window.client.getListingsFromDB(store, state.globalDirection, state.globalColumn);
+    window.client.getLocationsFromDB(store);
+    window.client.getBrandsFromDB(store);
   }
 
   
@@ -2281,6 +2581,8 @@ class App extends Component {
     const conditionsFilterActive = state.conditionsFilterActive;
     const valueSearch = state.valueSearch;
     const checkedSearch = state.checkedSearch;
+
+    
 
 
     function checkSearchFilter(list, valueSearch){
@@ -2317,23 +2619,42 @@ class App extends Component {
       }
     }
 
+    const rawList = state.rawList;
+    const rawLocations = state.rawLocations;
+    const rawBrands = state.rawBrands;
+
     const productsListSorted = state.productsListSorted;
+    //const productsListSorted = rawList;
     
+    /*
     const productsListFiltered = 
         
         
         checkConditionsFilterActive(checkStatusFilterActive(checkUsersFilterActive(checkSearchFilter(productsListSorted, valueSearch),usersFilterActive),
-        statusFilterActive),conditionsFilterActive)
+        statusFilterActive),conditionsFilterActive)*/
+
+        const productsListFiltered = 
+        
+        
+        checkConditionsFilterActive(checkStatusFilterActive(checkUsersFilterActive(checkSearchFilter(productsListSorted, valueSearch),usersFilterActive),
+        statusFilterActive),conditionsFilterActive)    
 
     console.log("PRODUCT FILTERED: " + productsListFiltered); 
+    
+    
     
     const productsByPage = state.productsByPage;  
     const activePage = state.activePage;
     const productsSelected = state.productsSelected;
     const usersList = state.usersList;
     const conditionsList = state.conditionsList;
-    const brandsList = state.brandsList;
-    const locationsList = state.locationsList;
+    
+    //const brandsList = state.brandsList;
+    const brandsList = rawBrands;
+    
+    //const locationsList = state.locationsList;
+    const locationsList = rawLocations;
+    
     const userActive = state.userActive;
     const partNumber = state.partNumber;
     const locationItem = state.locationItem;
@@ -2342,19 +2663,39 @@ class App extends Component {
     console.log("EL ARRAY ORDENADO: " + productsListSorted);
     
     const checkAll = state.checkAll;
-    
+
+    const globalDirection = state.globalDirection;
+    const globalColumn = state.globalColumn;
+    console.log("GLOBAL DIRECTION **************************", globalDirection);
+    console.log("GLOBAL COLUMN *****************************", globalColumn);
+
+
     console.log("Active Page in App: " + activePage);
     console.log("TODOS MIS LOCATIONS: " + locationsList);
     console.log("MI PARTNUMBER: " + partNumber);
 
+    //window.client.getListingsFromDB();
+    //console.log("ESTE ES EL VALOR PRUEBA!!!!!!!!!!!!: " + valorPrueba);
+    //getListingsFromDB();
     
-    
-    
-    
+    if (rawList.length < 1){
+      return (
+        
+      <Dimmer active inverted>
+        <Loader size='large'>Loading</Loader>
+      </Dimmer>
+      
+
+      
+      );
+    } else {
     return (
       <div>
         {console.log(activePage)}
-        <ProductsDashboard 
+        <ProductsDashboard
+          rawList = {rawList}
+          rawLocations = {rawLocations}
+          rawBrands = {rawBrands} 
           productsListGrouped = {productsListFiltered.chunk(productsByPage)}
           productsByPage = {productsByPage}
           activePage = {activePage}
@@ -2371,10 +2712,13 @@ class App extends Component {
           checkedSearch = {checkedSearch}
           partNumber = {partNumber}
           locationItem = {locationItem}
+          
+
+          //rawList = {rawList}
           //partNumberList = {partNumberList}
         />
       </div>
-    );
+    );}
   }
 }
 
